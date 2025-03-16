@@ -4,8 +4,11 @@
       <div class="row align-items-center py-2">
         <!-- Logo / Tên website -->
         <div class="col-6 col-lg-2 text-start d-flex align-items-center">
-          <router-link to="/" class="text-decoration-none"
-            ><h3 class="m-0">Home</h3>
+          <router-link to="/" class="text-decoration-none">
+            <img
+              src="https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/logo-bd.png"
+              alt=""
+            />
           </router-link>
         </div>
 
@@ -14,27 +17,32 @@
           <ul class="d-flex justify-content-between list-unstyled m-0">
             <li>
               <router-link to="/" class="text-decoration-none"
+                >Trang chủ</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/mua-ban-nha-dat" class="text-decoration-none"
                 >Nhà đất bán</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/mua-ban-dat" class="text-decoration-none"
                 >Bán đất</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/cho-thue-nha-dat" class="text-decoration-none"
                 >Nhà đất cho thuê</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/tin-tuc" class="text-decoration-none"
                 >Tin tức</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
-                >Sách thiếu nhi</router-link
+              <router-link to="/ve-chung-toi" class="text-decoration-none"
+                >Về chúng tôi</router-link
               >
             </li>
           </ul>
@@ -58,8 +66,13 @@
               </ul>
             </div>
             <div class="d-flex align-items-center post-btn">
-              <i class="fa-solid fa-pen me-2" style="color: white"></i>
-              <span>Đăng tin</span>
+              <router-link
+                to="/dang-tin"
+                class="d-flex align-items-center text-white text-decoration-none"
+              >
+                <i class="fa-solid fa-pen me-2"></i>
+                <span>Đăng tin</span>
+              </router-link>
             </div>
           </div>
         </div>
@@ -79,7 +92,12 @@
         <div
           class="menu-header d-flex justify-content-between align-items-center px-3 py-2"
         >
-          <router-link to="/"><h3 class="mt-2">Home</h3></router-link>
+          <router-link to="/">
+            <img
+              class="mt-1"
+              src="https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/logo-bd.png"
+              alt=""
+          /></router-link>
           <button class="btn-close" @click="toggleMobileMenu"></button>
         </div>
         <div class="menu-body px-3">
@@ -99,33 +117,40 @@
           <div
             class="d-flex justify-content-center align-items-center post-btn"
           >
-            <i class="fa-solid fa-pen me-2" style="color: white"></i>
-            <span>Đăng tin</span>
+            <router-link to="/dang-tin" class="text-white text-decoration-none">
+              <i class="fa-solid fa-pen me-2"></i>
+              <span>Đăng tin</span>
+            </router-link>
           </div>
           <ul class="menu-list list-unstyled mt-3">
             <li>
               <router-link to="/" class="text-decoration-none"
+                >Trang chủ</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/mua-ban-nha-dat" class="text-decoration-none"
                 >Nhà đất bán</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/mua-ban-dat" class="text-decoration-none"
                 >Bán đất</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/cho-thue-nha-dat" class="text-decoration-none"
                 >Nhà đất cho thuê</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
+              <router-link to="/tin-tuc" class="text-decoration-none"
                 >Tin tức</router-link
               >
             </li>
             <li>
-              <router-link to="/collections" class="text-decoration-none"
-                >Sách thiếu nhi</router-link
+              <router-link to="/ve-chung-toi" class="text-decoration-none"
+                >Về chúng tôi</router-link
               >
             </li>
           </ul>

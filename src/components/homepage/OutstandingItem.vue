@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <div class="row">
-      <div
-        class="out-item col-lg-4 col-md-6 col-sm-12 mb-4"
+      <router-link
+        :to="{ path: `/home/${property.id}` }"
+        class="out-item col-lg-4 col-md-6 col-sm-12 mb-4 text-decoration-none"
         v-for="(property, index) in properties"
         :key="index"
       >
@@ -27,7 +28,7 @@
             <p>{{ property.location }}</p>
           </div>
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
 </template>
@@ -38,6 +39,7 @@ export default {
     return {
       properties: [
         {
+          id: 1,
           image:
             "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
           price: "2.79 tỷ",
@@ -46,6 +48,7 @@ export default {
           location: "Thành Phố Bến Tre - Bến Tre",
         },
         {
+          id: 2,
           image:
             "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
           price: "3.5 tỷ",
@@ -54,6 +57,16 @@ export default {
           location: "Quận 1 - Hồ Chí Minh",
         },
         {
+          id: 3,
+          image:
+            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
+          price: "1.8 tỷ",
+          area: "150 m2",
+          title: "Đất nền giá rẻ khu vực ngoại ô",
+          location: "Huyện Củ Chi - Hồ Chí Minh",
+        },
+        {
+          id: 4,
           image:
             "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
           price: "1.8 tỷ",

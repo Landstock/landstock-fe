@@ -16,10 +16,10 @@
         <!-- Nhà đất nổi bật -->
         <div class="col-lg-2 col-md-4 col-sm-6 mb-4 footer-information">
           <h5 class="highlight">Nhà đất nổi bật</h5>
-          <p><a href="#">Liên hệ</a></p>
-          <p><a href="#">Chính sách bảo mật</a></p>
-          <p><a href="#">Quy chế hoạt động</a></p>
-          <p><a href="#">Quy định đăng tin</a></p>
+          <p><a href="#">Bán đất Hòa Bình</a></p>
+          <p><a href="#">Bán đất Hải Phòng</a></p>
+          <p><a href="#">Bán đất Kỳ Sơn</a></p>
+          <p><a href="#">Nhà đất Long An</a></p>
         </div>
 
         <!-- Quy định -->
@@ -29,7 +29,7 @@
           <p><a href="#">Chính sách bảo mật</a></p>
           <p><a href="#">Quy chế hoạt động</a></p>
           <p><a href="#">Quy định đăng tin</a></p>
-          <p><a href="#">Về chúng tôi</a></p>
+          <p><RouterLink to="/ve-chung-toi">Về chúng tôi</RouterLink></p>
         </div>
 
         <!-- Mạng xã hội -->

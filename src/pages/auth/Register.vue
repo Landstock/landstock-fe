@@ -5,12 +5,13 @@
         <div class="col-12 col-md-10 mx-auto">
           <form @submit.prevent="submitForm">
             <h2 class="frame_auto_head text-center pt-2">Đăng Ký</h2>
+
             <!-- Email -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="email" class="form-label">
-                  <span style="color: #e30000">*</span> Email:
-                </label>
+            <div class="row mb-1 align-items-center">
+              <label for="email" class="col-md-4 col-form-label text-md-end">
+                <span style="color: #e30000">*</span> Email:
+              </label>
+              <div class="col-md-8">
                 <input
                   type="email"
                   class="form-control"
@@ -23,11 +24,11 @@
             </div>
 
             <!-- Mật khẩu -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="password" class="form-label">
-                  <span style="color: #e30000">*</span> Mật khẩu:
-                </label>
+            <div class="row mb-1 align-items-center">
+              <label for="password" class="col-md-4 col-form-label text-md-end">
+                <span style="color: #e30000">*</span> Mật khẩu:
+              </label>
+              <div class="col-md-8">
                 <input
                   type="password"
                   class="form-control"
@@ -40,9 +41,11 @@
             </div>
 
             <!-- Họ và tên -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="fullname" class="form-label">Họ và tên:</label>
+            <div class="row mb-1 align-items-center">
+              <label for="fullname" class="col-md-4 col-form-label text-md-end">
+                <span style="color: #e30000">*</span>Họ và tên:</label
+              >
+              <div class="col-md-8">
                 <input
                   type="text"
                   class="form-control"
@@ -55,11 +58,11 @@
             </div>
 
             <!-- Số điện thoại 1 -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="phone1" class="form-label">
-                  <span style="color: #e30000">*</span> Số điện thoại 01:
-                </label>
+            <div class="row mb-1 align-items-center">
+              <label for="phone1" class="col-md-4 col-form-label text-md-end">
+                <span style="color: #e30000">*</span> Số điện thoại 01:
+              </label>
+              <div class="col-md-8">
                 <input
                   type="tel"
                   class="form-control"
@@ -72,9 +75,11 @@
             </div>
 
             <!-- Số điện thoại 2 -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="phone2" class="form-label">Số điện thoại 02:</label>
+            <div class="row mb-1 align-items-center">
+              <label for="phone2" class="col-md-4 col-form-label text-md-end"
+                >Số điện thoại 02:</label
+              >
+              <div class="col-md-8">
                 <input
                   type="tel"
                   class="form-control"
@@ -86,11 +91,14 @@
             </div>
 
             <!-- Mô tả dịch vụ -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="serviceDescription" class="form-label">
-                  <span style="color: #e30000">*</span> Mô tả dịch vụ:
-                </label>
+            <!-- <div class="row mb-1 align-items-center">
+              <label
+                for="serviceDescription"
+                class="col-md-4 col-form-label text-md-end"
+              >
+                <span style="color: #e30000">*</span> Mô tả dịch vụ:
+              </label>
+              <div class="col-md-8">
                 <textarea
                   class="form-control"
                   id="serviceDescription"
@@ -100,14 +108,14 @@
                   required
                 ></textarea>
               </div>
-            </div>
+            </div> -->
 
             <!-- Thành viên giới thiệu -->
-            <div class="row mb-3">
-              <div class="col-12">
-                <label for="referrer" class="form-label"
-                  >Thành viên giới thiệu:</label
-                >
+            <!-- <div class="row mb-1 align-items-center">
+              <label for="referrer" class="col-md-4 col-form-label text-md-end"
+                >Thành viên giới thiệu:</label
+              >
+              <div class="col-md-8">
                 <input
                   type="text"
                   class="form-control"
@@ -116,7 +124,7 @@
                   v-model.trim="referrer"
                 />
               </div>
-            </div>
+            </div> -->
 
             <!-- Button Đăng Ký -->
             <div class="row">

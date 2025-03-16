@@ -1,17 +1,17 @@
 <template>
-  <ng-header></ng-header>
+  <Header></Header>
   <router-view></router-view>
   <Footer></Footer>
 </template>
 
 <script>
-import NgHeader from "./components/nav/NgHeader.vue";
 import Footer from "./components/nav/Footer.vue";
+import Header from "./components/nav/Header.vue";
 
 export default {
   name: "App",
   components: {
-    NgHeader,
+    Header,
     Footer,
   },
 };
