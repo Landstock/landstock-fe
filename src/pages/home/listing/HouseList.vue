@@ -4,7 +4,7 @@
     <div class="container">
       <div class="row">
         <div class="tab-search">
-          <Search />
+          <!-- <Search /> -->
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
 
       <!-- Cột danh sách tỉnh -->
       <div class="col-lg-3 city">
-        <h6 class="city-title">Các tỉnh</h6>
+        <!-- <h6 class="city-title">Các tỉnh</h6>
         <div class="city-list">
           <p>Hà Nội (98760)</p>
           <p>Hồ Chí Minh (65432)</p>
@@ -88,18 +88,18 @@
           <p>Hà Nội (98760)</p>
           <p>Hồ Chí Minh (65432)</p>
           <p>Đà Nẵng (32145)</p>
-          <p>Bình Dương (12345)</p>
-        </div>
+          <p>Bình Dương (12345)</p> -->
+        <!-- </div> -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Search from "@/components/nav/Search.vue";
+// import Search from "@/components/nav/Search.vue";
 export default {
   components: {
-    Search,
+    // Search,
   },
 };
 </script>

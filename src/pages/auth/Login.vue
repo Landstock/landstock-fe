@@ -8,12 +8,12 @@
             <!-- Thông tin  -->
             <div class="mb-2">
               <label for="email" class="form-label"
-                ><span style="color: #e30000">*</span> SĐT / Email:</label
+                ><span style="color: #e30000">*</span> Email:</label
               >
               <input
                 type="email"
                 class="form-control"
-                placeholder="Nhập Số điện thoại hoặc Email của bạn"
+                placeholder="Nhập Email của bạn"
                 v-model.trim="email"
                 required
               />
@@ -73,18 +73,31 @@ export default {
     return {
       email: "",
       password: "",
+      user: null,
       rememberMe: false, // Lưu trạng thái "Lưu mật khẩu"
     };
   },
   methods: {
-    submitForm() {
-      // Xử lý logic đăng nhập
+    async submitForm() {
       console.log("Email:", this.email);
       console.log("Password:", this.password);
       console.log("Remember Me:", this.rememberMe);
+
+      try {
+        await this.$store.dispatch("login", {
+          email: this.email,
+          password: this.password,
+        });
+        const redirecUrl = "/" + (this.$route.query.redirect || "/");
+        // Dùng replace khi đăng nhập, đăng ký, hoặc redirect mà không muốn quay lại trang login
+        this.$router.replace(redirecUrl);
+        // Dùng push khi bạn muốn cho phép người dùng quay lại trang trước
+        // this.$router.push("/");
+      } catch (error) {
+        console.error("Lỗi đăng nhập:", error);
+      }
     },
     forgotPassword() {
-      // Xử lý logic quên mật khẩu
       alert("Chức năng quên mật khẩu đang được phát triển.");
     },
   },

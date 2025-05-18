@@ -3,15 +3,17 @@
     <div class="container">
       <div class="row bg-line g-0">
         <!-- tin tức -->
-
-        <h3>Tin tức bất động sản</h3>
+        <div class="d-flex justify-content-between">
+          <h3 style="color: #00abb8">Tin tức</h3>
+          <button class="text">Xem thêm ></button>
+        </div>
       </div>
 
       <div class="row mt-3 mb-5">
         <!-- bên trái -->
-        <div class="col-6">
+        <div class="col-6 img-left">
           <img
-            src="https://bds.com.vn/images/news/2024/10/04/large/dich-vu-edit-bds-chuyen-nghiep_1728048987.jpg"
+            src="https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/nhung-luu-y-quan-trong-trong-phong-thuy-khi-mua-nha-giup-thu-hut-tai-loc_62c495c0645d1.jpeg"
             alt="Main Image"
             class="img-fluid"
           />
@@ -43,22 +45,22 @@ export default {
       properties: [
         {
           image:
-            "https://bds.com.vn/images/news/2024/07/30/resized/can-ho08_1722304228.jpg",
+            "https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/can-ho-chung-cu-va-nhung-dieu-khach-hang-quan-tam-nhat_62c495b92a5d5.jpeg",
           title: "Chính chủ bán 278.6m² đất tại Phường Phú Khương, Tp Bến Tre ",
         },
         {
           image:
-            "https://bds.com.vn/images/news/2024/07/30/resized/gggg_page-0009_1722304144.jpg",
+            "https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/nhung-kieng-ky-chu-y-nen-tranh-khi-chon-mua-nha_62c495b371bde.jpeg",
           title: "Sống tại Vinhomes Grand Park sướng như thế nào?",
         },
         {
           image:
-            "https://bds.com.vn/images/news/2024/07/30/resized/nha-rieng05_1722304263.jpg",
+            "https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/nhung-luu-y-quan-trong-trong-phong-thuy-khi-mua-nha-giup-thu-hut-tai-loc_62c495c0645d1.jpeg",
           title: "Đầu tư bất động sản với lợi nhuận cao",
         },
         {
           image:
-            "https://bds.com.vn/images/news/2024/07/30/resized/moi-gioi-va-chi-phi-tim-kiem-data-–-tim-kiem-khach-hang_1722304107.png",
+            "https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/nhung-kieng-ky-chu-y-nen-tranh-khi-chon-mua-nha_62c495b371bde.jpeg",
           title: "Căn hộ cao cấp tại trung tâm thành phố",
         },
       ],
@@ -72,8 +74,38 @@ export default {
   border-bottom: 1px solid #ddd;
 }
 
+.text {
+  width: 100px;
+  height: 30px;
+  font-size: 14px;
+  border-radius: 8px;
+  color: #fff;
+  border: 1px solid #00abb8;
+  background-color: #00abb8;
+}
+
+.text:hover {
+  background-color: #fff;
+  color: #00abb8;
+  border: 1px solid #333;
+}
+
 .container img {
   width: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Giới hạn chiều cao ảnh nhỏ bên phải */
+/* .col-6 .img-fluid {
+  height: 150px;
+  margin-bottom: 12px;
+} */
+
+/* Ảnh lớn bên trái cho chiều cao cố định để đồng bộ */
+.img-left img {
+  height: 100%;
+  max-height: 446px;
   object-fit: cover;
   border-radius: 4px;
 }

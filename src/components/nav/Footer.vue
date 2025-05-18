@@ -3,33 +3,39 @@
     <div class="container pt-5">
       <div class="row">
         <!-- Phần giới thiệu -->
-        <div class="col-lg-6 col-md-12 col-sm-12 mb-4 footer-text">
+        <div class="col-lg-5 col-md-12 col-sm-12 mb-4 footer-text">
           <h5>Kênh đăng tin bất động sản hiệu quả</h5>
           <p>
             Địa chỉ: Tầng 5 - tòa nhà AC, Ngõ 78 Duy Tân, Dịch Vọng, Cầu Giấy,
             Hà Nội
           </p>
-          <p><a href="#">AGORA CITY</a></p>
-          <p><a href="#">AGORA CITY</a></p>
+          <p>
+            <a href="tel:0123456789"
+              ><i class="fa-solid fa-phone"></i> Điện thoại: 0123456789</a
+            >
+          </p>
+          <p>
+            <a href="mailto:example@gmail.com">
+              <i class="fa-solid fa-envelope"></i> Email: example@gmail.com
+            </a>
+          </p>
         </div>
 
         <!-- Nhà đất nổi bật -->
         <div class="col-lg-2 col-md-4 col-sm-6 mb-4 footer-information">
-          <h5 class="highlight">Nhà đất nổi bật</h5>
-          <p><a href="#">Bán đất Hòa Bình</a></p>
-          <p><a href="#">Bán đất Hải Phòng</a></p>
-          <p><a href="#">Bán đất Kỳ Sơn</a></p>
-          <p><a href="#">Nhà đất Long An</a></p>
+          <h5 class="highlight">Giới thiệu</h5>
+          <p><a href="#">Trang chủ</a></p>
+          <p><a href="#">Tin tức</a></p>
+          <p><a href="#">Liên hệ</a></p>
+          <p><RouterLink to="/ve-chung-toi">Về chúng tôi</RouterLink></p>
         </div>
 
         <!-- Quy định -->
-        <div class="col-lg-2 col-md-4 col-sm-6 mb-4 footer-information">
-          <h5 class="highlight">Quy định</h5>
-          <p><a href="#">Liên hệ</a></p>
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4 footer-information">
+          <h5 class="highlight">Chính sách & Quy định</h5>
           <p><a href="#">Chính sách bảo mật</a></p>
           <p><a href="#">Quy chế hoạt động</a></p>
           <p><a href="#">Quy định đăng tin</a></p>
-          <p><RouterLink to="/ve-chung-toi">Về chúng tôi</RouterLink></p>
         </div>
 
         <!-- Mạng xã hội -->
@@ -51,7 +57,7 @@
 
     <!-- Copyright -->
     <div class="text-center py-4">
-      <span>Copyright &copy; 2024 Bất Động Sản Hiệu Quả</span>
+      <span>Copyright &copy; Bất Động Sản Hiệu Quả</span>
     </div>
   </footer>
 </template>

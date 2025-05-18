@@ -4,64 +4,81 @@
     <div class="position-relative">
       <img
         class="w-100"
-        src="	https://bds59.giaodienwebmau.com/wp-content/uploads/2022/07/slider1.jpg"
+        src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/08/slider-2.jpg"
         alt=""
       />
       <div
         class="position-absolute top-50 start-50 translate-middle search-container"
       >
+        <div class="text-white text-center text-uppercase pb-3">
+          <h2 style="font-size: 40px">Trang tin bất động sản số 1 Việt Nam</h2>
+        </div>
         <div class="box-search">
           <search></search>
         </div>
       </div>
     </div>
-    <!-- noi bat  -->
-    <div class="bg-color">
-      <div class="container">
-        <div class="row">
-          <div class="mt-5">
-            <h2>bất động sản nổi bật</h2>
-          </div>
-          <outstanding-item></outstanding-item>
+
+    <!-- Bất động sản nổi bật -->
+    <div class="container">
+      <div class="row mb-4">
+        <div class="mt-5 tilte text-center">
+          <h2>Bất động sản <span>nổi bật</span></h2>
+          <img
+            src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
+            alt=""
+          />
         </div>
+        <outstanding-item></outstanding-item>
       </div>
     </div>
-    <!-- new bds  -->
 
-    <new-realestate></new-realestate>
-
-    <!-- dự án nổi bật  -->
-    <div class="bg-color">
+    <!-- Nhà đất nổi bật -->
+    <div class="bg-color py-4">
       <div class="container">
-        <div class="row">
-          <div class="mt-4">
-            <h2>Dự án nổi bật</h2>
-          </div>
-          <div
-            class="col-lg-3 col-md-6 col-sm-12 my-4"
-            v-for="(property, index) in properties"
-            :key="index"
-          >
-            <div class="image-wrapper">
-              <img :src="property.image" alt="" />
-              <div class="proper-text">
-                <p class="title">{{ property.title }}</p>
-                <p class="address">{{ property.address }}</p>
-              </div>
+        <house-item></house-item>
+      </div>
+    </div>
+
+    <!-- Dự án nổi bật -->
+    <div class="container">
+      <div class="row">
+        <div class="my-4 tilte text-center">
+          <h2>Dự án <span>nổi bật</span></h2>
+          <img
+            src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
+            alt=""
+          />
+        </div>
+        <div
+          class="col-lg-3 col-md-6 col-sm-12 my-4"
+          v-for="(property, index) in properties"
+          :key="index"
+        >
+          <div class="image-wrapper">
+            <img :src="property.image" alt="" />
+            <div class="proper-text">
+              <p class="title">{{ property.title }}</p>
+              <p class="address">{{ property.address }}</p>
             </div>
           </div>
+        </div>
 
-          <div class="col-12 d-flex justify-content-center">
-            <router-link to="/danh-sach-du-an">
-              <button class="btn-color mb-5 px-4 py-2">Xem tất cả</button>
-            </router-link>
-          </div>
+        <div class="col-12 d-flex justify-content-center">
+          <router-link to="/danh-sach-du-an">
+            <button class="btn-color mb-5 px-4 py-2">Xem tất cả</button>
+          </router-link>
         </div>
       </div>
     </div>
 
-    <!-- thông tin uy tín  -->
-    <section-content></section-content>
+    <!-- Tin tức bất động sản -->
+    <new-realestate></new-realestate>
+
+    <!-- Thông tin uy tín -->
+    <div class="bg-color">
+      <section-content></section-content>
+    </div>
   </section>
 </template>
 
@@ -70,11 +87,13 @@ import Search from "@/components/nav/Search.vue";
 import OutstandingItem from "@/components/homepage/OutstandingItem.vue";
 import NewRealestate from "./realestatenew/NewRealestate.vue";
 import SectionContent from "./sectioncontent/SectionContent.vue";
+import HouseItem from "@/components/homepage/HouseItem.vue";
 
 export default {
   components: {
     Search,
     OutstandingItem,
+    HouseItem,
     NewRealestate,
     SectionContent,
   },
@@ -84,34 +103,42 @@ export default {
         {
           id: 1,
           image:
-            "https://bds.com.vn/images/duan/small/vinhomes-grand-park-quan-9_1710126960.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img24.jpg",
           title:
             "VinHomes Grand Park Quận 9 - 0979.79.79.69 - Giá Gốc Chủ Đầu Tư ✔️",
           address: "Quận 9 TPHCM",
+          price: "2.79 tỷ",
+          area: "278.6 m2",
         },
         {
           id: 2,
           image:
-            "https://bds.com.vn/images/duan/small/vinhomes-grand-park-quan-9_1710126960.jpg",
+            "	https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img22.jpg",
           title:
             "VinHomes Grand Park Quận 9 - 0979.79.79.69 - Giá Gốc Chủ Đầu Tư ✔️",
           address: "Quận 9 TPHCM",
+          price: "2.79 tỷ",
+          area: "278.6 m2",
         },
         {
           id: 3,
           image:
-            "https://bds.com.vn/images/duan/small/vinhomes-grand-park-quan-9_1710126960.jpg",
+            "	https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img14.jpg",
           title:
             "VinHomes Grand Park Quận 9 - 0979.79.79.69 - Giá Gốc Chủ Đầu Tư ✔️",
           address: "Quận 9 TPHCM",
+          price: "2.79 tỷ",
+          area: "278.6 m2",
         },
         {
           id: 4,
           image:
-            "https://bds.com.vn/images/duan/small/vinhomes-grand-park-quan-9_1710126960.jpg",
+            "	https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img1.jpg",
           title:
             "VinHomes Grand Park Quận 9 - 0979.79.79.69 - Giá Gốc Chủ Đầu Tư ✔️",
           address: "Quận 9 TPHCM",
+          price: "2.79 tỷ",
+          area: "278.6 m2",
         },
       ],
     };
@@ -120,15 +147,23 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  text-transform: uppercase;
+.tilte h2 {
+  font-size: 30px;
+}
+
+.tilte:hover {
+  color: red;
+}
+
+.tilte span {
+  color: #00abb8;
 }
 
 .bg-color {
   background-color: #f3f4f7;
 }
 
-/* banner  */
+/* banner */
 .search-container {
   width: 80%;
   max-width: 1200px;
@@ -141,31 +176,36 @@ h2 {
   padding: 20px;
 }
 
-/* dự án nổi bật  */
+/* nhà đất nổi bật */
+
+/* dự án nổi bật */
 .image-wrapper {
   position: relative;
-  height: 400px; /* Hoặc chiều dài bạn muốn */
+  height: 400px;
   border-radius: 8px;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .image-wrapper img {
-  object-fit: cover; /* Để hình ảnh phù hợp với kích thước container */
+  object-fit: cover;
   height: 100%;
+  width: 100%;
 }
+
 .image-wrapper:hover {
   transform: scale(1.05);
 }
+
 .proper-text {
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
-  /* background: rgba(0, 0, 0, 0.6); */
   color: #fff;
   padding: 10px;
 }
+
 .proper-text .title {
   font-size: 15px;
   font-weight: bold;
@@ -180,6 +220,7 @@ h2 {
   background-color: #fff;
   border-radius: 6px;
 }
+
 .btn-color:hover {
   border: 1px solid #3c9f10;
   background-color: #3c9f10;

@@ -11,7 +11,7 @@
         :key="index"
         class="col-md-4 col-sm-12 mb-4"
       >
-        <div class="card bg-light p-4 text-center h-100 shadow-sm">
+        <div class="card p-4 text-center h-100 shadow-sm">
           <div class="information-icon mb-3">
             <img :src="item.icon" alt="icon" class="img-fluid" />
           </div>

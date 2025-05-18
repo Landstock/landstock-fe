@@ -42,16 +42,16 @@
 
             <!-- Họ và tên -->
             <div class="row mb-1 align-items-center">
-              <label for="fullname" class="col-md-4 col-form-label text-md-end">
+              <label for="username" class="col-md-4 col-form-label text-md-end">
                 <span style="color: #e30000">*</span>Họ và tên:</label
               >
               <div class="col-md-8">
                 <input
                   type="text"
                   class="form-control"
-                  id="fullname"
+                  id="username"
                   placeholder="Nhập họ và tên"
-                  v-model.trim="fullName"
+                  v-model.trim="username"
                   required
                 />
               </div>
@@ -59,23 +59,26 @@
 
             <!-- Số điện thoại 1 -->
             <div class="row mb-1 align-items-center">
-              <label for="phone1" class="col-md-4 col-form-label text-md-end">
-                <span style="color: #e30000">*</span> Số điện thoại 01:
+              <label
+                for="phonenumber"
+                class="col-md-4 col-form-label text-md-end"
+              >
+                <span style="color: #e30000">*</span> Số điện thoại :
               </label>
               <div class="col-md-8">
                 <input
                   type="tel"
                   class="form-control"
-                  id="phone1"
-                  placeholder="Nhập số điện thoại 01"
-                  v-model.trim="phone1"
+                  id="phonenumber"
+                  placeholder="Nhập số điện thoại "
+                  v-model.trim="phonenumber"
                   required
                 />
               </div>
             </div>
 
             <!-- Số điện thoại 2 -->
-            <div class="row mb-1 align-items-center">
+            <!-- <div class="row mb-1 align-items-center">
               <label for="phone2" class="col-md-4 col-form-label text-md-end"
                 >Số điện thoại 02:</label
               >
@@ -88,7 +91,7 @@
                   v-model.trim="phone2"
                 />
               </div>
-            </div>
+            </div> -->
 
             <!-- Mô tả dịch vụ -->
             <!-- <div class="row mb-1 align-items-center">
@@ -147,22 +150,19 @@ export default {
     return {
       email: "",
       password: "",
-      fullName: "",
-      phone1: "",
-      phone2: "",
-      serviceDescription: "",
-      referrer: "",
+      username: "",
+      phonenumber: "",
     };
   },
   methods: {
-    submitForm() {
-      console.log("Email:", this.email);
-      console.log("Password:", this.password);
-      console.log("Họ và tên:", this.fullName);
-      console.log("Số điện thoại 1:", this.phone1);
-      console.log("Số điện thoại 2:", this.phone2);
-      console.log("Mô tả dịch vụ:", this.serviceDescription);
-      console.log("Thành viên giới thiệu:", this.referrer);
+    async submitForm() {
+      await this.$store.dispatch("signup", {
+        email: this.email,
+        password: this.password,
+        username: this.username,
+        phonenumber: this.phonenumber,
+      });
+      this.$router.push("/login");
     },
   },
 };

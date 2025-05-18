@@ -1,7 +1,7 @@
 <template>
-  <Header></Header>
+  <Header v-if="!isAdminPage"></Header>
   <router-view></router-view>
-  <Footer></Footer>
+  <Footer v-if="!isAdminPage"></Footer>
 </template>
 
 <script>
@@ -13,6 +13,28 @@ export default {
   components: {
     Header,
     Footer,
+  },
+  computed: {
+    isAdminPage() {
+      return this.$route.path.startsWith("/admin");
+    },
+    didAutoLogout() {
+      return this.$store.getters.didAutoLogout;
+    },
+  },
+  watch: {
+    $route() {
+      // Tính toán lại khi route thay đổi
+      this.isAdminPage = this.$route.path.startsWith("/admin");
+    },
+    didAutoLogout(newVal, oldVal) {
+      if (newVal && newVal !== oldVal) {
+        this.$router.replace("/products");
+      }
+    },
+  },
+  created() {
+    this.$store.dispatch("autoLogin");
   },
 };
 </script>

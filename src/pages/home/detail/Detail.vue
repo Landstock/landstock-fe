@@ -1,89 +1,140 @@
 <template>
-  <!-- tìm kiếm  -->
-  <div class="background">
-    <div class="container">
-      <div class="row">
-        <div class="tab-search">
-          <Search />
-        </div>
+  <div class="property-wrapper py-4">
+    <!-- Hình ảnh -->
+    <div class="information-image mb-4">
+      <!-- Swiper nhỏ -->
+      <swiper
+        :modules="modules"
+        :slides-per-view="3"
+        :space-between="50"
+        :loop="true"
+        :centered-slides="true"
+        navigation
+        :pagination="{ clickable: true }"
+        class="thumbnail-swiper"
+      >
+        <swiper-slide
+          v-for="(image, index) in properties[0]?.image || []"
+          :key="index"
+          class="custom-slide"
+        >
+          <img :src="image" @click="openImage(index)" />
+          <div class="overlay"></div>
+        </swiper-slide>
+      </swiper>
+
+      <!-- Modal Swiper lớn -->
+      <div
+        v-if="selectedImageIndex !== null"
+        class="modal"
+        @click.self="closeImage"
+      >
+        <swiper
+          :modules="modules"
+          :initial-slide="selectedImageIndex"
+          :loop="true"
+          :centered-slides="true"
+          navigation
+          :pagination="{ clickable: true }"
+          class="modal-swiper"
+        >
+          <swiper-slide
+            v-for="(image, index) in properties[0]?.image || []"
+            :key="'modal-' + index"
+          >
+            <img :src="image" class="modal-image" />
+          </swiper-slide>
+        </swiper>
+        <button class="close-modal" @click="closeImage">×</button>
       </div>
     </div>
   </div>
-  <!-- nội dung  -->
   <div class="container">
-    <div class="row mt-4">
-      <div class="col-9">
-        <div class="information-image">
-          <div class="large-image">
-            <img
-              :src="currentImage"
-              alt="Property Image"
-              class="large-image-display"
-            />
-          </div>
-          <!-- Danh sách ảnh nhỏ -->
-          <div class="thumbnail-images">
-            <img
-              v-for="(img, index) in property[0].image"
-              :key="index"
-              :src="img"
-              alt="Thumbnail"
-              class="thumbnail"
-              @click="changeImage(img)"
-            />
-          </div>
-        </div>
-        <div class="description">
-          <span>thông tin mô tả</span>
-          <pre>
-Tôi cần bán đất tại Phường Phú Khương, Tp Bến Tre, tỉnh Bến Tre
-► Diện tích: 278.6m² (trong đó có 200m² đất ở tại đô thị, 78.6m² đất trồng cây lâu năm)
-⚡ Đường trước nhà thông ra đường lớn oto 7 chỗ đi thoải mái.
-⚡ Đất ở khu dân cư đông đúc, gần chợ, trường học, bệnh viện, cách Bách Hóa Xanh 200m. Tiện ích đầy đủ.
-⭐️ Trên đất đã có nhà kiên cố, có thể dọn về ở luôn.
-⭐️ Khu vực thoáng mát, yên tĩnh rất thích hợp để ở.
-⚡ Giá bán: 10 triệu/m²
-Qúy khách có nhu cầu vui lòng liên hệ chính chủ: Chị Tâm SĐT ☎️ 0898753761
-  </pre
-          >
-          <div>
-            <span>Tìm kiếm theo từ khóa</span>
-          </div>
+    <!-- Nội dung chính -->
+    <div class="row" v-for="(property, index) in properties" :key="index">
+      <!-- Thông tin bất động sản -->
+      <div class="col-md-7 mb-4">
+        <div class="description p-4 e rounded">
+          <div class="breadcrumb text-muted mb-2">Trang chủ / Nhà bán</div>
+          <h2 class="mb-3">{{ property.title }}</h2>
+          <p class="mb-2">
+            <i class="fa-solid fa-location-dot me-2 text-danger"></i>
+            {{ property.address }}
+          </p>
+          <p class="text-muted">{{ property.description }}</p>
         </div>
       </div>
-      <!-- Thông tin liên hệ -->
-      <div class="col-3 contact-card">
-        <h4 class="contact-title">Liên hệ người đăng</h4>
-        <div class="avatar-section text-center">
-          <img
-            class="avatar-img"
-            src="https://bds.com.vn/images/avartarmember.png"
-            alt="Avatar"
-          />
-          <p class="name">Nguyễn Văn A</p>
-          <p class="status">Đã sẵn sàng tư vấn cho bạn</p>
-        </div>
-        <div class="contact-info">
-          <div class="d-flex justify-content-between">
-            <a href="tel:0123456789" class="contact-item call"
-              ><i class="fa-solid fa-phone"></i> 0123456789</a
+
+      <!-- Thông tin liên hệ -->
+      <div class="col-md-5 mb-4">
+        <div class="contact-card p-4 rounded">
+          <div
+            class="price-wrapper d-flex justify-content-between align-items-center mb-3"
+          >
+            <h4 class="fw-bold mb-0">{{ property.price }}</h4>
+            <div class="text-end">
+              <i class="fas fa-expand-arrows-alt me-1"></i>
+              Diện tích: {{ property.area }}
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="avatar-section d-flex align-items-center mb-3">
+            <img
+              class="avatar-img me-3"
+              src="https://bds.com.vn/images/avartarmember.png"
+              alt="Avatar"
+            />
+            <div>
+              <p class="name fw-semibold mb-1">Nguyễn Văn A</p>
+              <p class="phone text-white text-center fw-bold">
+                <a
+                  href="tel:0123456789"
+                  class="contact-item-phone d-flex align-items-center justify-content-center text-white"
+                  style="text-decoration: none"
+                >
+                  <img
+                    src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/08/phone-call-red.gif"
+                    alt="Gọi"
+                    style="width: 28px"
+                  />
+                  <span>0123 456 789</span>
+                </a>
+              </p>
+
+              <p class="status text-success mb-0">Hỗ trợ quý khách 24/7</p>
+            </div>
+          </div>
+
+          <div class="contact-info d-flex justify-content-between mb-3">
+            <a
+              href="tel:0123456789"
+              class="contact-item-call animated-link call-glow"
             >
-            <a href="" class="contact-item zalo">
-              <img
-                src="https://bds.com.vn/modules/products/assets/images/zalo.png"
-                alt="Chat Zalo"
-                class="icon"
-              />
-              Chat qua Zalo
+              Gọi điện
+            </a>
+
+            <a
+              href="https://zalo.me/0123456789"
+              class="contact-item-zalo animated-link zalo-glow"
+              target="_blank"
+            >
+              Chat Zalo
             </a>
           </div>
-          <a href="" class="view-more"
-            ><img
+
+          <hr />
+
+          <a href="#" class="view-more text-decoration-none d-block">
+            <img
               src="https://bds.com.vn/modules/products/assets/images/arrow04.gif"
-              alt=""
+              alt="Xem thêm"
+              class="me-1"
+              style="width: 14px"
             />
-            Xem tất cả tin đăng của người đăng</a
-          >
+            <span>Xem tất cả tin đăng của người đăng </span>
+          </a>
         </div>
       </div>
     </div>
@@ -91,165 +142,288 @@ Qúy khách có nhu cầu vui lòng liên hệ chính chủ: Chị Tâm SĐT ☎
 </template>
 
 <script>
-import Search from "@/components/nav/Search.vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/scrollbar";
 export default {
   components: {
-    Search,
+    Swiper,
+    SwiperSlide,
   },
   data() {
     return {
-      property: [
+      properties: [
         {
           id: 1,
           image: [
-            "https://bds.com.vn/images/products/2024/12/large/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-            "https://bds.com.vn/images/products/2024/12/large/z6095730868981_8128e4759bfb2984f517d148db7c4552.jpg",
-            "https://bds.com.vn/images/products/2024/12/large/z6095730837812_d41bc6afab94cbc2cc4a3cb6e5f4b6e1.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img23.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img19.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img12.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img13.jpg",
+            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img21.jpg",
+            "https://bds.com.vn/images/products/2025/05/large/20240523164832-0473_wm.jpg",
           ],
-          title: "Chính chủ bán 278.6m² đất tại Phường Phú Khương, Tp Bến Tre",
+          price: "2.79 tỷ",
+          area: "278.6 m2",
+          title:
+            "Chính chủ bán 278.6m² đất tại Phường Phú Khương, Tp Bến Tre...",
+          address: "Số 7 Đại lộ Thăng Long, Nam Từ Liêm, Hà Nội",
+          description:
+            "Tiện nghi cuộc sống tại dự án chung cư có thể kể tới như: tuyến phố thương mại, phòng sinh hoạt cộng đồng, tuyến phố thương mại quảng trường, dịch vụ thương mại, quảng trường mùa hạ, vườn treo, cung đường tình yêu, vườn nướng BBQ, vườn mặt trời, quảng trường mùa xuân, vườn cọ 1, vườn cọ 2…. Có thể thấy rằng, mọi tiện nghi cuộc sống tại dự án đều hướng cư dân tại đây đến cuộc sống gắn kết, sống chan hòa, vui vẻ; bên cạnh đó, mật độ cây xanh và hồ nước nhân tạo tại dự án lớn, mang đến màu xanh bao phủ toàn dự án căn hộ Chung cư An Bình City, mang lại bầu không khí trong lành, mát mẻ đến từng căn hộ tại dự án.",
         },
       ],
-      currentImage: "", // Ảnh lớn hiện tại
+      selectedImageIndex: null,
+      modules: [Navigation, Pagination, Scrollbar, A11y],
     };
   },
-  created() {
-    this.currentImage = this.property[0].image[0]; // Mặc định ảnh lớn là ảnh đầu tiên
+  mounted() {
+    window.addEventListener("keydown", this.handleKeydown);
+  },
+  beforeUnmount() {
+    window.removeEventListener("keydown", this.handleKeydown);
   },
   methods: {
-    changeImage(image) {
-      this.currentImage = image; // Thay đổi ảnh lớn khi click vào ảnh nhỏ
+    openImage(index) {
+      this.selectedImageIndex = index;
+    },
+    closeImage() {
+      this.selectedImageIndex = null;
+    },
+    handleKeydown(e) {
+      if (e.key === "Escape") this.closeImage();
     },
   },
 };
 </script>
 
 <style scoped>
-/* Bố cục tổng thể */
-.background {
-  background-color: #f3f4f7;
-  padding: 20px 0;
-}
-
-.tab-search {
-  margin-top: 40px;
-}
-
-/* các thông tin và ảnh  */
 .information-image {
-  border: 1px solid #f0f2f5;
-  border-radius: 10px;
+  margin-top: 37px;
 }
-.large-image-display {
+/* swipper  */
+.swiper-slide {
+  margin-right: 0;
+}
+
+/* Swiper thumbnail */
+.thumbnail-swiper img {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  height: 375px;
   object-fit: cover;
-  margin-bottom: 16px;
 }
 
-.thumbnail-images {
+/* Định dạng slide */
+.custom-slide {
+  margin-right: 0;
+  position: relative;
+}
+
+/* Lớp phủ mờ cho tất cả ảnh */
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.3s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ẩn overlay cho slide đang active */
+.swiper-slide-active .overlay {
+  opacity: 0;
+}
+
+/* Modal hiển thị ảnh lớn */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
 }
 
-.thumbnail {
-  width: 80px;
-  height: 80px;
-  border: 2px solid #ddd;
-  border-radius: 4px;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.thumbnail:hover {
-  border-color: #007bff;
-}
-
-/* Card thông tin liên hệ */
-.contact-card {
-  background-color: #f0f2f5;
+/* Ảnh trong modal */
+.modal-image {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  height: 320px;
-  top: 75px;
+  margin: auto;
 }
 
-.contact-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 16px;
+/* Swiper trong modal */
+.modal-swiper {
+  width: 80%;
+  height: 80%;
   text-align: center;
 }
 
-.avatar-section {
-  margin-bottom: 20px;
+/* Nút đóng modal */
+.close-modal {
+  position: absolute;
+  top: -16px;
+  right: 10px;
+  font-size: 3rem;
+  color: white;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
-.avatar-img {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin-bottom: 8px;
+/* thông tin  */
+.description {
+  background-color: #ffffff;
+  border-radius: 5px;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.breadcrumb,
+.fas {
+  color: #00abb8;
+}
+.price-wrapper h4 {
+  color: #00abb8;
+}
+
+.contact-card {
+  background-color: #ffffff;
+  border-radius: 5px;
+  transition: box-shadow 0.3s ease;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .name {
-  font-size: 16px;
+  line-height: 30px;
+  color: #3d4d65;
+  font-size: 25px;
+  margin-bottom: 5px;
+  display: block;
+}
+.phone {
+  padding: 4px;
+  background: #eb5155;
+  border-radius: 20px;
+  margin: 0;
+}
+
+.status {
+  margin-bottom: 0;
+  font-style: italic;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 5px;
+}
+
+.contact-info {
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  padding: 0.375rem 0.75rem;
+  font-size: 25px;
+  line-height: 1.5;
+  border-radius: 4px;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+@keyframes glowing-green {
+  0% {
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.8), 0 0 25px rgba(40, 167, 69, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
+  }
+}
+
+@keyframes glowing-blue {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.8), 0 0 25px rgba(0, 123, 255, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  }
+}
+
+.animated-link {
+  padding: 10px 20px;
+  border-radius: 6px;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.call-glow {
+  background-color: #28a745; /* Màu xanh lá */
+  animation: glowing-green 1.5s infinite ease-in-out;
+}
+
+.zalo-glow {
+  background-color: #007bff; /* Màu xanh dương Zalo */
+  animation: glowing-blue 1.5s ease-in-out 5s infinite;
+}
+
+.contact-item-call,
+.contact-item-zalo {
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 20px;
+  width: 47%;
+}
+
+.contact-item-call {
+  background-color: #28a745;
+  border-color: #28a745;
+  margin-right: 15px;
+}
+
+.contact-item-zalo {
+  background-color: #00abb8;
+  border-color: #00abb8;
+}
+
+.avatar-img {
+  display: inline-block;
+  width: 115px;
+  height: 115px;
+  object-position: center;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #ececec;
+  padding: 5px;
+}
+
+.view-more {
   font-weight: 500;
   color: #333;
 }
 
-.status {
-  font-size: 14px;
-  color: #666;
-}
-
-/* Thông tin liên hệ */
-.contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.contact-info a {
-  padding: 4px 18px;
-  border-radius: 6px;
-}
-
-.contact-item {
-  border: 1px solid #009ba1;
-  color: #fff;
-  background-color: #009ba1;
-  font-size: 14px;
-  text-decoration: none;
-  align-items: center;
-  gap: 6px;
-}
-
-.call {
-  background-color: #009ba1;
-}
-
-.zalo {
-  background-color: #28a745;
-}
-
-.view-more {
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.contact-item:hover {
-  text-decoration: none;
-  background-color: #83c8cb;
-}
-
-.icon {
-  width: 20px;
-  height: 20px;
+.view-more:hover {
+  color: #00abb8;
+  text-decoration: underline;
 }
 </style>
