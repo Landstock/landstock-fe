@@ -1,167 +1,231 @@
 <template>
-  <form class="navbar-search-form">
-    <!-- Loại nhà đất -->
-    <!-- <div class="group-local">
-      <ul class="list-type">
-        <li>Nhà đất bán</li>
-        <li>Nhà đất cho thuê</li>
-      </ul>
-    </div> -->
+  <div class="search-container container p-4 rounded-4 text-white">
+    <!-- Tabs -->
+    <div class="d-flex justify-content-center gap-3 mb-4">
+      <button
+        class="btn btn-tab"
+        :class="{ active: selectedTab === 'ban' }"
+        @click="selectedTab = 'ban'"
+      >
+        Nhà đất bán
+      </button>
+      <button
+        class="btn btn-tab"
+        :class="{ active: selectedTab === 'thue' }"
+        @click="selectedTab = 'thue'"
+      >
+        Nhà đất cho thuê
+      </button>
+    </div>
 
-    <!-- Tìm kiếm từ khóa -->
-    <div class="search-bar">
-      <div class="input-wrapper">
-        <i class="fa-solid fa-magnifying-glass"></i>
+    <!-- Basic Search -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        <select v-model="selectedType" class="form-select shadow-sm rounded-3">
+          <option value="">Loại nhà đất</option>
+          <option value="canho">Căn hộ cho thuê</option>
+          <option value="bietthu">Biệt thự bán</option>
+          <option value="chungcu">Chung cư bán</option>
+          <option value="nhapho">Nhà đất bán</option>
+          <!-- <option value="vanphong"></option>
+          <option value="cuahang">Cửa hàng</option> -->
+        </select>
+      </div>
+
+      <div class="col-md-5">
         <input
-          class="keyword-search"
+          v-model="keyword"
           type="text"
-          placeholder="Nhập từ khóa, khu vực tìm kiếm. Ví dụ: Hà Đông"
+          class="form-control shadow-sm rounded-3"
+          placeholder="Nhập từ khóa hoặc địa điểm (VD: Vinhomes)"
         />
       </div>
-    </div>
 
-    <!-- Nhãn hướng dẫn -->
-    <div class="search-label">
-      <span class="label-search">Hoặc chọn thuộc tính tìm kiếm dưới đây</span>
-    </div>
-
-    <!-- Lựa chọn tìm kiếm -->
-    <div class="box-search-select">
-      <div class="left-box-search-select">
-        <select class="form-select">
-          <option value="0">Danh mục BĐS</option>
-          <option value="1">Mua bán căn hộ chung cư</option>
-          <option value="2">Mua bán nhà riêng</option>
-        </select>
-
-        <select class="form-select">
-          <option value="0">Tỉnh/Thành phố</option>
-          <option value="1">Hà Nội</option>
-          <option value="2">Hải Phòng</option>
-        </select>
-
-        <!-- <select class="form-select">
-          <option value="0">Quận / Huyện</option>
-        </select>
-
-        <select class="form-select">
-          <option value="0">Xã / Phường</option>
-        </select>
-
-        <select class="form-select">
-          <option value="0">Chọn dự án</option>
-        </select> -->
-
-        <select class="form-select">
-          <option value="0">Diện tích</option>
-        </select>
-
-        <select class="form-select">
-          <option value="0">Mức giá</option>
-        </select>
-        <!-- 
-        <select class="form-select">
-          <option value="0">Số phòng ngủ</option>
-        </select> -->
-
-        <select class="form-select">
-          <option value="0">Hướng</option>
-        </select>
+      <div class="col-md-2">
+        <button
+          class="btn btn-primary w-100 rounded-3 d-flex justify-content-center align-items-center gap-2"
+          @click="search"
+        >
+          <i class="bi bi-search"></i> Tìm kiếm
+        </button>
       </div>
-      <div class="right-box-search-select">
-        <button type="submit" class="btn btn-danger">Tìm kiếm</button>
+
+      <div class="col-md-2">
+        <button
+          class="btn btn-outline-light w-100 rounded-3 d-flex justify-content-center align-items-center gap-2"
+          @click="toggleAdvanced"
+        >
+          <i class="bi bi-sliders"></i> Thêm
+        </button>
       </div>
     </div>
-  </form>
+
+    <!-- Advanced Filters -->
+    <transition name="fade">
+      <div v-if="showAdvanced" class="bg-white text-dark rounded-4 p-3 mt-3">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <select v-model="selectedCity" class="form-select rounded-3">
+              <option value="">Tỉnh/Thành phố</option>
+              <option value="hanoi">Hà Nội</option>
+              <option value="hcm">TP. HCM</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select v-model="selectedDistrict" class="form-select rounded-3">
+              <option value="">Quận/Huyện</option>
+              <option value="q1">Quận 1</option>
+              <option value="q2">Quận 2</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select v-model="selectedArea" class="form-select rounded-3">
+              <option value="">Diện tích</option>
+              <option value="50">Dưới 50m²</option>
+              <option value="100">50-100m²</option>
+              <option value="100+">Trên 100m²</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <select v-model="selectedPrice" class="form-select rounded-3">
+              <option value="">Mức giá</option>
+              <option value="1">Dưới 1 tỷ</option>
+              <option value="3">1 - 3 tỷ</option>
+              <option value="5">3 - 5 tỷ</option>
+              <option value="5+">Trên 5 tỷ</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </transition>
+
+    <!-- Category Icons -->
+    <div
+      class="category-icons d-flex justify-content-around text-center mt-4 flex-wrap gap-3"
+    >
+      <div
+        v-for="item in categories"
+        :key="item.name"
+        class="category-item p-2"
+      >
+        <img
+          v-if="item.icon"
+          :src="item.icon"
+          alt="icon"
+          class="img-fluid"
+          style="margin-bottom: 15px"
+        />
+        <h3>{{ item.name }}</h3>
+      </div>
+    </div>
+  </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      selectedTab: "ban",
+      selectedType: "",
+      keyword: "",
+      selectedCity: "",
+      selectedDistrict: "",
+      selectedArea: "",
+      selectedPrice: "",
+      showAdvanced: false,
+      categories: [
+        {
+          name: "Căn hộ",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_1.png?1753167401033",
+        },
+        {
+          name: "Biệt thự",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_2.png?1753167401033",
+        },
+        {
+          name: "Chung cư",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_3.png?1753167401033",
+        },
+        {
+          name: "Nhà phố",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_4.png?1753167401033",
+        },
+      ],
+    };
+  },
+  methods: {
+    toggleAdvanced() {
+      this.showAdvanced = !this.showAdvanced;
+    },
+    search() {
+      console.log("Tìm kiếm:", {
+        tab: this.selectedTab,
+        type: this.selectedType,
+        keyword: this.keyword,
+        city: this.selectedCity,
+        district: this.selectedDistrict,
+        area: this.selectedArea,
+        price: this.selectedPrice,
+      });
+    },
+  },
+};
+</script>
+
 <style scoped>
-.group-local {
-  margin-bottom: 10px;
+.search-container {
+  background: #ffffff20;
 }
 
-.list-type {
-  display: flex;
-  gap: 10px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 16px;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 0 8px;
-  background-color: #fff;
-}
-
-.input-wrapper i {
-  color: #aaa;
-  margin-right: 8px;
-}
-
-.keyword-search {
-  border: none;
-  flex: 1;
-  padding: 8px 4px;
-  font-size: 14px;
-  outline: none;
-}
-
-.search-label {
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.box-search-select {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 10px;
-}
-
-.left-box-search-select {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-}
-
-.form-select {
-  width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  color: #333;
-  font-size: 14px;
-}
-
-.right-box-search-select {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.btn-danger {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  background-color: #dc3545;
+.btn-tab {
+  background: transparent;
+  border: 2px solid #fff;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 30px;
   color: #fff;
-  font-size: 16px;
-  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-tab.active {
+  background-color: #fff;
+  color: #2f80ed;
+}
+.btn-tab:hover {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
-.btn-danger:hover {
-  background-color: #c82333;
+input.form-control,
+select.form-select {
+  padding: 10px 14px;
+}
+
+.category-item {
+  width: 80px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+.category-item:hover {
+  transform: scale(1.2);
+}
+.category-item .img {
+  /* font-size: 15px; */
+  color: white;
+}
+.category-item h3 {
+  font-size: 15px;
+  color: white;
+}
+.category-item:hover h3 {
+  color: #2f80ed;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

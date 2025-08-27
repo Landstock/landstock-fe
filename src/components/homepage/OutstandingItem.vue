@@ -2,17 +2,18 @@
   <div class="container">
     <div class="row">
       <div
-        class="out-item col-lg-3 col-md-4 col-sm-12 mb-4 text-decoration-none"
-        v-for="(property, index) in properties"
+        class="out-item col-xl-3 col-lg-4 col-md-6 col-sm-12 mb-4 text-decoration-none"
+        v-for="(property, index) in properties.posts"
         :key="index"
       >
         <!-- Hình ảnh bất động sản -->
         <router-link
-          :to="`/chi-tiet/${property.id}`"
+          :to="`/chi-tiet/${property.slug}`"
           class="image-wrapper-link"
         >
           <div class="image-wrapper">
-            <img :src="property.image" :alt="property.title" />
+            <img :src="property.imageUrls?.[0]" :alt="property.title" />
+
             <div class="description-overlay">
               <p>{{ property.description }}</p>
             </div>
@@ -21,7 +22,7 @@
 
         <!-- Thông tin bất động sản -->
         <router-link
-          :to="{ path: `/chi-tiet/${property.id}` }"
+          :to="{ path: `/chi-tiet/${property.slug}` }"
           class="bg-white p-3 text-decoration-none"
         >
           <div class="box-text">
@@ -33,8 +34,8 @@
             <!-- Vị trí -->
             <div class="property-address">
               <p>
-                <i class="fa-solid fa-location-dot me-1 icon-red"></i
-                >{{ property.address }}
+                <i class="fa-solid fa-location-dot me-1 icon-red"></i>
+                {{ getFullAddress(property) }}
               </p>
             </div>
 
@@ -42,7 +43,7 @@
             <div class="property-area">
               <span
                 ><i class="fas fa-expand-arrows-alt me-1 icon-blue"></i>
-                <strong>Diện tích: </strong>{{ property.area }}</span
+                <strong>Diện tích: </strong>{{ property.area }}</span
               >
             </div>
             <hr />
@@ -52,7 +53,7 @@
                 <span class="pr-3">{{ property.price }}</span>
               </div>
               <div>
-                <router-link :to="{ path: `/chi-tiet/${property.id}` }">
+                <router-link :to="{ path: `/chi-tiet/${property.slug}` }">
                   <button class="btn custom-btn">Xem ngay ></button>
                 </router-link>
               </div>
@@ -69,58 +70,54 @@ export default {
   name: "OutstandingProperties",
   data() {
     return {
-      properties: [
-        {
-          id: 1,
-          image:
-            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-          price: "2.79 tỷ",
-          area: "278.6 m2",
-          title:
-            "Chính chủ bán 278.6m² đất tại Phường Phú Khương, Tp Bến Tre Nhà phố sang trọng tại trung tâm thành phố",
-          address: "Số 7 Đại lộ Thăng Long, Nam Từ Liêm, Hà Nội",
-          description:
-            "Vinhomes Green Bay là một trong những sản phẩm BĐS nổi bật khu vực phía Tây Hà Nội Vinhomes Green Bay là một trong những sản phẩm BĐS nổi bật khu vực phía Tây Hà Nộido tập đoàn Vingroup đầu tư và triển khai. Dự án được định hướng trở thành tổ hợp đô thị hiện đại sang trọng bậc nhất đất Hà Thành với các sản phẩm BĐS hấp dẫn nhất hiện nay gồm Liền kề – Biệt thự Vinhomes Greenbay Mễ Trì – Shophouse Mễ Trì – Căn hộ chung cư cao cấp",
-        },
-        {
-          id: 2,
-          image:
-            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-          price: "3.5 tỷ",
-          area: "350 m2",
-          title: "Nhà phố sang trọng tại trung tâm thành phố",
-          address: "Quận 1 - Hồ Chí Minh",
-        },
-        {
-          id: 3,
-          image:
-            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-          price: "1.8 tỷ",
-          area: "150 m2",
-          title: "Đất nền giá rẻ khu vực ngoại ô",
-          address: "Huyện Củ Chi - Hồ Chí Minh",
-        },
-        {
-          id: 4,
-          image:
-            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-          price: "1.8 tỷ",
-          area: "150 m2",
-          title: "Đất nền giá rẻ khu vực ngoại ô",
-          address:
-            "Huyện Củ Chi - Hồ Chí Minh Huyện Củ Chi - Hồ Chí Minh Huyện Củ Chi - Hồ Chí Minh",
-        },
-        {
-          id: 5,
-          image:
-            "https://bds.com.vn/images/products/2024/12/small/z6095730901769_41a52be28eca70d893b8bc6d0119f1ff.jpg",
-          price: "1.8 tỷ",
-          area: "150 m2",
-          title: "Đất nền giá rẻ khu vực ngoại ô",
-          address: "Huyện Củ Chi - Hồ Chí Minh",
-        },
-      ],
+      properties: [],
     };
+  },
+  methods: {
+    getFullAddress(property) {
+      // Tạo mảng chứa các phần của địa chỉ dựa trên dữ liệu từ action getTopViewedPosts
+      const addressParts = [];
+
+      // Thêm tên đường nếu có
+      if (property.street) {
+        addressParts.push(property.street);
+      }
+
+      // Thêm phường/xã (từ wardName)
+      if (property.wardName) {
+        addressParts.push(property.wardName);
+      }
+
+      // Thêm quận/huyện (từ districtName)
+      if (property.districtName) {
+        addressParts.push(property.districtName);
+      }
+
+      // Thêm tỉnh/thành phố (từ provinceName)
+      if (property.provinceName) {
+        addressParts.push(property.provinceName);
+      }
+
+      // Nối các phần với dấu phẩy, lọc bỏ các phần trống
+      const fullAddress = addressParts
+        .filter((part) => part && part.trim())
+        .join(", ");
+
+      // Trả về địa chỉ đầy đủ hoặc thông báo nếu không có
+      return fullAddress || "Chưa có địa chỉ";
+    },
+  },
+  async mounted() {
+    try {
+      // Gọi action getTopViewedPosts từ Vuex
+      await this.$store.dispatch("posts/getTopViewedPosts");
+
+      // Lấy dữ liệu từ state sau khi đã commit
+      this.properties = this.$store.state.posts; // posts là state chứa danh sách bài đăng
+      console.log("chứa danh sách:", this.$store.state.posts);
+    } catch (error) {
+      console.error("Lấy bài đăng có lượt xem cao nhất lỗi:", error);
+    }
   },
 };
 </script>
@@ -184,7 +181,7 @@ export default {
   transform: translateY(100%);
   transition: transform 0.3s ease-in-out;
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   box-sizing: border-box;
 }

@@ -7,6 +7,7 @@ export default {
   state() {
     return {
       users: [],
+      total: 0,
     };
   },
   getters,

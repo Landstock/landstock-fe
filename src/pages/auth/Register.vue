@@ -156,7 +156,7 @@ export default {
   },
   methods: {
     async submitForm() {
-      await this.$store.dispatch("signup", {
+      await this.$store.dispatch("auth/signup", {
         email: this.email,
         password: this.password,
         username: this.username,

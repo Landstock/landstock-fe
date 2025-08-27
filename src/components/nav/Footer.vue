@@ -3,22 +3,31 @@
     <div class="container pt-5">
       <div class="row">
         <!-- Phần giới thiệu -->
-        <div class="col-lg-5 col-md-12 col-sm-12 mb-4 footer-text">
-          <h5>Kênh đăng tin bất động sản hiệu quả</h5>
-          <p>
-            Địa chỉ: Tầng 5 - tòa nhà AC, Ngõ 78 Duy Tân, Dịch Vọng, Cầu Giấy,
-            Hà Nội
-          </p>
-          <p>
-            <a href="tel:0123456789"
-              ><i class="fa-solid fa-phone"></i> Điện thoại: 0123456789</a
-            >
-          </p>
-          <p>
-            <a href="mailto:example@gmail.com">
-              <i class="fa-solid fa-envelope"></i> Email: example@gmail.com
-            </a>
-          </p>
+        <div class="col-lg-5 col-md-12 col-sm-12 mb-4">
+          <div class="footer-logo-wrapper">
+            <!-- <img
+              src="../../assets/image/logo.png"
+              alt="Logo"
+              class="footer-logo"
+            /> -->
+
+            <div class="footer-contact">
+              <p>
+                Địa chỉ: Tầng 5 - tòa nhà AC, Ngõ 78 Duy Tân, Dịch Vọng, Cầu
+                Giấy, Hà Nội
+              </p>
+              <p>
+                <a href="tel:0123456789">
+                  <i class="fa-solid fa-phone"></i> Điện thoại: 0123456789
+                </a>
+              </p>
+              <p>
+                <a href="mailto:example@gmail.com">
+                  <i class="fa-solid fa-envelope"></i> Email: example@gmail.com
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
 
         <!-- Nhà đất nổi bật -->
@@ -56,23 +65,39 @@
     <div class="divider mt-3"></div>
 
     <!-- Copyright -->
-    <div class="text-center py-4">
+    <!-- <div class="text-center py-4">
       <span>Copyright &copy; Bất Động Sản Hiệu Quả</span>
-    </div>
+    </div> -->
   </footer>
 </template>
 
 <style scoped>
 footer {
-  background-color: #333;
-  color: #fff;
+  background-color: #f2f2f2;
+  color: #333;
   font-weight: bold;
 }
 
 footer p,
 footer a {
-  color: #fff;
+  color: #333;
   text-decoration: none;
+}
+
+.footer-logo-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.footer-contact {
+  flex: 1;
+}
+
+.footer-logo {
+  max-width: 100px;
+  height: auto;
+  margin-top: 4px;
 }
 
 footer a:hover {

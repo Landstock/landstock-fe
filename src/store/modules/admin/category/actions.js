@@ -4,15 +4,20 @@ export default {
   // add category
   async addCategoryManage(context, payload) {
     try {
-      const response = await axiosInstance.post("/category/create", payload);
-      const responseData = response.data.data;
-      console.log("Loại tin: ", responseData);
+      // gọi thủ công
+      // const response = await axiosInstance.post("/category/create", payload);
+      // const responseData = response.data.data;
+      // console.log("Loại tin: ", responseData);
 
-      payload.id = responseData._id;
-      payload.name = responseData.name;
-      payload.type = responseData.type;
+      // payload.id = responseData._id;
+      // payload.name = responseData.name;
+      // payload.type = responseData.type;
 
-      context.commit("addCategory", payload);
+      // context.commit("addCategory", payload);
+
+      //  gọi lại API để đảm bảo ID đúng dạng và nhất quán
+      await axiosInstance.post("/category/create", payload);
+      await context.dispatch("getCategoryManage");
     } catch (error) {
       console.log(error);
       throw new Error(
@@ -23,8 +28,15 @@ export default {
 
   // get category
   async getCategoryManage({ commit }) {
-    const response = await axiosInstance.get("/category/all");
-    commit("setCategories", response.data.data);
+    try {
+      const response = await axiosInstance.get("/category/all");
+      commit("setCategories", response.data.data);
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        error.response?.data?.message || "lấy dữ liệu không thành công"
+      );
+    }
   },
 
   // update category

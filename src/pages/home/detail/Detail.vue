@@ -4,17 +4,18 @@
     <div class="information-image mb-4">
       <!-- Swiper nhỏ -->
       <swiper
+        v-if="property.imageUrls && property.imageUrls.length > 0"
         :modules="modules"
         :slides-per-view="3"
-        :space-between="50"
         :loop="true"
+        :looped-slides="property.imageUrls.length"
         :centered-slides="true"
         navigation
         :pagination="{ clickable: true }"
         class="thumbnail-swiper"
       >
         <swiper-slide
-          v-for="(image, index) in properties[0]?.image || []"
+          v-for="(image, index) in property.imageUrls"
           :key="index"
           class="custom-slide"
         >
@@ -22,6 +23,13 @@
           <div class="overlay"></div>
         </swiper-slide>
       </swiper>
+
+      <div
+        v-else
+        class="alert alert-info d-flex align-items-center justify-content-center"
+      >
+        Không có hình ảnh hiển thị
+      </div>
 
       <!-- Modal Swiper lớn -->
       <div
@@ -39,7 +47,7 @@
           class="modal-swiper"
         >
           <swiper-slide
-            v-for="(image, index) in properties[0]?.image || []"
+            v-for="(image, index) in property.imageUrls"
             :key="'modal-' + index"
           >
             <img :src="image" class="modal-image" />
@@ -49,19 +57,30 @@
       </div>
     </div>
   </div>
-  <div class="container">
+
+  <!-- Loading state -->
+  <div v-if="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="container" v-else-if="property.slug">
     <!-- Nội dung chính -->
-    <div class="row" v-for="(property, index) in properties" :key="index">
+    <div class="row">
       <!-- Thông tin bất động sản -->
       <div class="col-md-7 mb-4">
         <div class="description p-4 e rounded">
           <div class="breadcrumb text-muted mb-2">Trang chủ / Nhà bán</div>
           <h2 class="mb-3">{{ property.title }}</h2>
           <p class="mb-2">
-            <i class="fa-solid fa-location-dot me-2 text-danger"></i>
-            {{ property.address }}
+            <i class="fa-solid fa-location-dot me-1 icon-red"></i>
+            {{ getFullAddress(property) }}
           </p>
+
           <p class="text-muted">{{ property.description }}</p>
+          <p class="text-muted">Lượt xem: {{ property.views || 0 }}</p>
         </div>
       </div>
 
@@ -71,10 +90,10 @@
           <div
             class="price-wrapper d-flex justify-content-between align-items-center mb-3"
           >
-            <h4 class="fw-bold mb-0">{{ property.price }}</h4>
+            <h4 class="fw-bold mb-0">{{ property.price }} triệu</h4>
             <div class="text-end">
               <i class="fas fa-expand-arrows-alt me-1"></i>
-              Diện tích: {{ property.area }}
+              Diện tích: {{ property.area }} m²
             </div>
           </div>
 
@@ -83,14 +102,19 @@
           <div class="avatar-section d-flex align-items-center mb-3">
             <img
               class="avatar-img me-3"
-              src="https://bds.com.vn/images/avartarmember.png"
+              :src="
+                property.user?.avatar ||
+                'https://bds.com.vn/images/avartarmember.png'
+              "
               alt="Avatar"
             />
             <div>
-              <p class="name fw-semibold mb-1">Nguyễn Văn A</p>
+              <p class="name fw-semibold mb-1">
+                {{ property.user?.username || "Nguyễn Văn A" }}
+              </p>
               <p class="phone text-white text-center fw-bold">
                 <a
-                  href="tel:0123456789"
+                  :href="`tel:${property.user?.phonenumber || '0123456789'}`"
                   class="contact-item-phone d-flex align-items-center justify-content-center text-white"
                   style="text-decoration: none"
                 >
@@ -99,24 +123,24 @@
                     alt="Gọi"
                     style="width: 28px"
                   />
-                  <span>0123 456 789</span>
+                  <span>{{ property.user?.phonenumber || "0123456789" }}</span>
                 </a>
               </p>
-
-              <p class="status text-success mb-0">Hỗ trợ quý khách 24/7</p>
+              <p class="status text-success mb-0">Hỗ trợ quý khách 24/7</p>
             </div>
           </div>
 
           <div class="contact-info d-flex justify-content-between mb-3">
             <a
-              href="tel:0123456789"
+              :href="`tel:${property.user?.phonenumber || '0123456789'}`"
               class="contact-item-call animated-link call-glow"
             >
               Gọi điện
             </a>
-
             <a
-              href="https://zalo.me/0123456789"
+              :href="`https://zalo.me/${
+                property.user?.phonenumber || '0123456789'
+              }`"
               class="contact-item-zalo animated-link zalo-glow"
               target="_blank"
             >
@@ -125,19 +149,12 @@
           </div>
 
           <hr />
-
-          <a href="#" class="view-more text-decoration-none d-block">
-            <img
-              src="https://bds.com.vn/modules/products/assets/images/arrow04.gif"
-              alt="Xem thêm"
-              class="me-1"
-              style="width: 14px"
-            />
-            <span>Xem tất cả tin đăng của người đăng </span>
-          </a>
         </div>
       </div>
     </div>
+
+    <!-- ✅ Chỉ render RelatedProperties khi có property.slug -->
+    <RelatedProperties v-if="property.slug" :currentSlug="property.slug" />
   </div>
 </template>
 
@@ -149,37 +166,57 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import RelatedProperties from "./RelatedProperties.vue";
+
 export default {
+  props: ["slug"],
   components: {
     Swiper,
     SwiperSlide,
+    RelatedProperties,
   },
   data() {
     return {
-      properties: [
-        {
-          id: 1,
-          image: [
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img23.jpg",
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img19.jpg",
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img12.jpg",
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img13.jpg",
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/img21.jpg",
-            "https://bds.com.vn/images/products/2025/05/large/20240523164832-0473_wm.jpg",
-          ],
-          price: "2.79 tỷ",
-          area: "278.6 m2",
-          title:
-            "Chính chủ bán 278.6m² đất tại Phường Phú Khương, Tp Bến Tre...",
-          address: "Số 7 Đại lộ Thăng Long, Nam Từ Liêm, Hà Nội",
-          description:
-            "Tiện nghi cuộc sống tại dự án chung cư có thể kể tới như: tuyến phố thương mại, phòng sinh hoạt cộng đồng, tuyến phố thương mại quảng trường, dịch vụ thương mại, quảng trường mùa hạ, vườn treo, cung đường tình yêu, vườn nướng BBQ, vườn mặt trời, quảng trường mùa xuân, vườn cọ 1, vườn cọ 2…. Có thể thấy rằng, mọi tiện nghi cuộc sống tại dự án đều hướng cư dân tại đây đến cuộc sống gắn kết, sống chan hòa, vui vẻ; bên cạnh đó, mật độ cây xanh và hồ nước nhân tạo tại dự án lớn, mang đến màu xanh bao phủ toàn dự án căn hộ Chung cư An Bình City, mang lại bầu không khí trong lành, mát mẻ đến từng căn hộ tại dự án.",
-        },
-      ],
+      loading: true, // ✅ Thêm loading state
+      property: {
+        id: "",
+        title: "",
+        price: "",
+        area: "",
+        provinceCode: "",
+        provinceName: "",
+        districtCode: "",
+        districtName: "",
+        wardCode: "",
+        wardName: "",
+        street: "",
+        project: "",
+        description: "",
+        imageUrls: [],
+        user: { username: "", phonenumber: "", avatar: "" },
+        views: 0,
+        category: "",
+        slug: "", // ✅ Đảm bảo slug được khởi tạo
+      },
       selectedImageIndex: null,
       modules: [Navigation, Pagination, Scrollbar, A11y],
+      showModal: false,
     };
   },
+  created() {
+    console.log("Slug hiện tại:", this.slug);
+    this.fetchPostDetail();
+  },
+
+  watch: {
+    slug(newSlug, oldSlug) {
+      if (newSlug !== oldSlug) {
+        this.loading = true; // ✅ Set loading khi đổi slug
+        this.fetchPostDetail();
+      }
+    },
+  },
+
   mounted() {
     window.addEventListener("keydown", this.handleKeydown);
   },
@@ -187,11 +224,58 @@ export default {
     window.removeEventListener("keydown", this.handleKeydown);
   },
   methods: {
+    getFullAddress(property) {
+      const addressParts = [];
+
+      if (property.street) {
+        addressParts.push(property.street);
+      }
+
+      if (property.wardName) {
+        addressParts.push(property.wardName);
+      }
+
+      if (property.districtName) {
+        addressParts.push(property.districtName);
+      }
+
+      if (property.provinceName) {
+        addressParts.push(property.provinceName);
+      }
+
+      const fullAddress = addressParts
+        .filter((part) => part && part.trim())
+        .join(", ");
+
+      return fullAddress || "Chưa có địa chỉ";
+    },
+    async fetchPostDetail() {
+      try {
+        this.loading = true;
+        const postId = this.slug;
+        console.log("postId là lấy slug", postId);
+
+        const postDetail = await this.$store.dispatch(
+          "posts/getPostDetail",
+          postId
+        );
+        console.log("Chi tiết bài viết:", postDetail);
+        this.property = postDetail;
+      } catch (error) {
+        console.error("Lỗi khi lấy chi tiết bài đăng:", error);
+        alert("Không thể tải chi tiết bài đăng. Vui lòng thử lại.");
+      } finally {
+        this.loading = false;
+      }
+    },
+
     openImage(index) {
       this.selectedImageIndex = index;
+      this.showModal = true;
     },
     closeImage() {
       this.selectedImageIndex = null;
+      this.showModal = false;
     },
     handleKeydown(e) {
       if (e.key === "Escape") this.closeImage();
@@ -204,25 +288,22 @@ export default {
 .information-image {
   margin-top: 37px;
 }
-/* swipper  */
+
 .swiper-slide {
   margin-right: 0;
 }
 
-/* Swiper thumbnail */
 .thumbnail-swiper img {
   width: 100%;
+  max-height: 100%;
   height: 375px;
   object-fit: cover;
 }
 
-/* Định dạng slide */
 .custom-slide {
   margin-right: 0;
   position: relative;
 }
-
-/* Lớp phủ mờ cho tất cả ảnh */
 
 .overlay {
   position: absolute;
@@ -236,12 +317,10 @@ export default {
   pointer-events: none;
 }
 
-/* Ẩn overlay cho slide đang active */
 .swiper-slide-active .overlay {
   opacity: 0;
 }
 
-/* Modal hiển thị ảnh lớn */
 .modal {
   position: fixed;
   top: 0;
@@ -255,7 +334,6 @@ export default {
   z-index: 3;
 }
 
-/* Ảnh trong modal */
 .modal-image {
   max-width: 90%;
   max-height: 90%;
@@ -264,14 +342,12 @@ export default {
   margin: auto;
 }
 
-/* Swiper trong modal */
 .modal-swiper {
   width: 80%;
   height: 80%;
   text-align: center;
 }
 
-/* Nút đóng modal */
 .close-modal {
   position: absolute;
   top: -16px;
@@ -283,7 +359,6 @@ export default {
   cursor: pointer;
 }
 
-/* thông tin  */
 .description {
   background-color: #ffffff;
   border-radius: 5px;
@@ -295,6 +370,7 @@ export default {
 .fas {
   color: #00abb8;
 }
+
 .price-wrapper h4 {
   color: #00abb8;
 }
@@ -313,6 +389,7 @@ export default {
   margin-bottom: 5px;
   display: block;
 }
+
 .phone {
   padding: 4px;
   background: #eb5155;
@@ -378,12 +455,12 @@ export default {
 }
 
 .call-glow {
-  background-color: #28a745; /* Màu xanh lá */
+  background-color: #28a745;
   animation: glowing-green 1.5s infinite ease-in-out;
 }
 
 .zalo-glow {
-  background-color: #007bff; /* Màu xanh dương Zalo */
+  background-color: #007bff;
   animation: glowing-blue 1.5s ease-in-out 5s infinite;
 }
 
@@ -425,5 +502,17 @@ export default {
 .view-more:hover {
   color: #00abb8;
   text-decoration: underline;
+}
+
+.tilte h2 {
+  font-size: 30px;
+}
+
+.tilte:hover {
+  color: red;
+}
+
+.tilte span {
+  color: #00abb8;
 }
 </style>

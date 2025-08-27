@@ -1,37 +1,45 @@
 <template>
   <div class="container">
-    <div class="pt-5">
-      <!-- Form đăng tin -->
-      <div class="col">
-        <div class="post-form">
-          <h3 class="text-center">Đăng tin bất động sản</h3>
+    <div class="pt-5 pb-4">
+      <div class="col-lg-11 mx-auto" style="margin-top: 22px">
+        <div class="post-form p-4">
+          <h3 class="text-center mb-4 text-primary">
+            📝 Đăng tin Bất Động Sản
+          </h3>
+
           <form @submit.prevent="submitPost">
+            <!-- Tiêu đề -->
             <div class="mb-3">
-              <label for="title" class="form-label">Tiêu đề</label>
+              <label for="title" class="form-label fw-semibold">Tiêu đề</label>
               <input
                 type="text"
                 v-model="post.title"
                 class="form-control"
-                placeholder="Tiêu đề"
+                placeholder="Nhập tiêu đề tin đăng"
                 id="title"
                 required
               />
             </div>
 
-            <div class="mb-3 row">
+            <!-- Giá - Diện tích - Địa chỉ - Loại tin -->
+            <div class="row g-4 mb-4">
               <div class="col-md-3">
-                <label for="price" class="form-label">Giá bán</label>
+                <label for="price" class="form-label fw-semibold"
+                  >Giá bán</label
+                >
                 <input
                   type="text"
                   v-model="post.price"
                   class="form-control"
-                  placeholder="VD: 12 triệu, 1.2 tỷ"
+                  placeholder="VD: 1.2 tỷ"
                   id="price"
                   required
                 />
               </div>
               <div class="col-md-3">
-                <label for="area" class="form-label">Diện tích</label>
+                <label for="area" class="form-label fw-semibold"
+                  >Diện tích</label
+                >
                 <input
                   type="text"
                   v-model="post.area"
@@ -41,19 +49,79 @@
                   required
                 />
               </div>
+              <div class="col-md-3">
+                <label class="form-label fw-semibold">Tỉnh/Thành phố</label>
+                <select
+                  v-model="post.provinceCode"
+                  @change="fetchDistricts"
+                  class="form-select"
+                  required
+                >
+                  <option value="">-- Chọn tỉnh/thành phố --</option>
+                  <option
+                    v-for="province in provinces"
+                    :key="province.code"
+                    :value="province.code"
+                  >
+                    {{ province.name }}
+                  </option>
+                </select>
+              </div>
 
               <div class="col-md-3">
-                <label for="address" class="form-label">Địa chỉ</label>
-                <input
-                  v-model="post.address"
-                  class="form-control"
-                  placeholder="Địa chỉ"
-                  id="address"
+                <label class="form-label fw-semibold">Quận/Huyện</label>
+                <select
+                  v-model="post.districtCode"
+                  @change="fetchWards"
+                  class="form-select"
+                  :disabled="!post.provinceCode"
                   required
+                >
+                  <option value="">-- Chọn quận/huyện --</option>
+                  <option
+                    v-for="district in districts"
+                    :key="district.code"
+                    :value="district.code"
+                  >
+                    {{ district.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold">Phường/Xã</label>
+                <select
+                  v-model="post.wardCode"
+                  @change="updateWardName"
+                  class="form-select"
+                  :disabled="!post.districtCode"
+                  required
+                >
+                  <option value="">-- Chọn phường/xã --</option>
+                  <option
+                    v-for="ward in wards"
+                    :key="ward.code"
+                    :value="ward.code"
+                  >
+                    {{ ward.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold">Tên đường</label>
+                <input
+                  v-model="post.street"
+                  type="text"
+                  class="form-control"
+                  placeholder="VD: Nguyễn Trãi"
                 />
               </div>
+
               <div class="col-md-3">
-                <label for="category" class="form-label">Loại tin</label>
+                <label for="category" class="form-label fw-semibold"
+                  >Loại tin</label
+                >
                 <select
                   v-model="post.categoryId"
                   class="form-select"
@@ -72,56 +140,59 @@
               </div>
             </div>
 
+            <!-- Mô tả -->
             <div class="mb-3">
-              <label for="description" class="form-label">Mô tả chi tiết</label>
+              <label for="description" class="form-label fw-semibold"
+                >Mô tả chi tiết</label
+              >
               <textarea
                 v-model="post.description"
                 class="form-control"
-                placeholder="Thông tin chi tiết"
+                placeholder="Nhập nội dung chi tiết"
                 id="description"
                 rows="4"
                 required
               ></textarea>
             </div>
 
+            <!-- Upload ảnh -->
             <div class="mb-3">
-              <label for="image" class="form-label">Hình ảnh</label>
+              <label for="imageUrls" class="form-label fw-semibold">
+                Hình ảnh
+                <span class="text-muted">(Bạn cần chọn ít nhất 3 ảnh)</span>
+              </label>
+
               <input
                 type="file"
                 class="form-control"
-                id="image"
+                id="imageUrls"
                 @change="handleImageUpload"
                 accept="image/*"
                 multiple
               />
 
-              <!-- Hiển thị ảnh đã chọn -->
-              <div class="mt-3 d-flex flex-wrap gap-2">
+              <div class="mt-3 d-flex flex-wrap gap-3">
                 <div
-                  v-for="(img, index) in post.image"
+                  v-for="(img, index) in post.imageUrls"
                   :key="index"
-                  class="position-relative"
+                  class="image-preview-box"
                 >
-                  <img
-                    :src="img"
-                    alt="preview"
-                    width="100"
-                    height="100"
-                    class="preview-img"
-                  />
+                  <img :src="img" alt="preview" />
                   <button
                     type="button"
-                    class="btn btn-sm btn-danger position-absolute top-0 end-0 p-1"
+                    class="btn-close btn-sm btn-remove"
                     @click="removeImage(index)"
-                  >
-                    ✖
-                  </button>
+                  ></button>
                 </div>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">
-              Đăng tin
+            <!-- Submit -->
+            <button
+              type="submit"
+              class="btn btn-warning w-100 fw-bold d-flex align-items-center justify-content-center gap-2"
+            >
+              🚀 <span>Đăng tin ngay</span>
             </button>
           </form>
         </div>
@@ -132,21 +203,33 @@
 
 <script>
 import axiosInstance from "@/services/AxiosServices";
+import axios from "axios";
 
 export default {
   data() {
     return {
+      provinces: [],
+      districts: [],
+      wards: [],
       post: {
         title: "",
         price: "",
         area: "",
-        address: "",
+        provinceCode: "",
+        provinceName: "",
+        districtCode: "",
+        districtName: "",
+        wardCode: "",
+        wardName: "",
+        street: "",
+        project: "",
         categoryId: "",
         description: "",
-        image: [],
+        imageUrls: [],
       },
     };
   },
+
   computed: {
     // Lấy danh sách danh mục
     categories() {
@@ -158,6 +241,7 @@ export default {
     },
   },
   mounted() {
+    this.fetchProvinces();
     this.$store
       .dispatch("category/getCategoryManage")
       .then(() => {
@@ -173,6 +257,52 @@ export default {
     },
   },
   methods: {
+    async fetchProvinces() {
+      try {
+        const res = await axios.get(
+          "https://provinces.open-api.vn/api/?depth=1"
+        );
+        this.provinces = res.data;
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách tỉnh:", err);
+      }
+    },
+    async fetchDistricts() {
+      try {
+        const res = await axios.get(
+          `https://provinces.open-api.vn/api/p/${this.post.provinceCode}?depth=2`
+        );
+        this.districts = res.data.districts;
+        // Gán tên tỉnh
+        const selectedProvince = this.provinces.find(
+          (p) => p.code == this.post.provinceCode
+        );
+        this.post.provinceName = selectedProvince ? selectedProvince.name : "";
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách quận:", err);
+      }
+    },
+    async fetchWards() {
+      try {
+        const res = await axios.get(
+          `https://provinces.open-api.vn/api/d/${this.post.districtCode}?depth=2`
+        );
+        this.wards = res.data.wards;
+        // Gán tên quận
+        const selectedDistrict = this.districts.find(
+          (d) => d.code == this.post.districtCode
+        );
+        this.post.districtName = selectedDistrict ? selectedDistrict.name : "";
+      } catch (err) {
+        console.error("Lỗi khi lấy danh sách phường:", err);
+      }
+    },
+    updateWardName() {
+      const selectedWard = this.wards.find(
+        (ward) => ward.code == this.post.wardCode
+      );
+      this.post.wardName = selectedWard ? selectedWard.name : "";
+    },
     async handleImageUpload(event) {
       const files = event.target.files;
       for (let i = 0; i < files.length; i++) {
@@ -188,7 +318,7 @@ export default {
           });
 
           const imageUrl = response.data.data;
-          this.post.image.push(imageUrl);
+          this.post.imageUrls.push(imageUrl);
           console.log("file ảnh: ", imageUrl);
         } catch (error) {
           console.error("Lỗi upload ảnh:", error);
@@ -197,27 +327,38 @@ export default {
       }
     },
     async removeImage(index) {
-      const imageUrl = this.post.image[index];
+      const imageUrl = this.post.imageUrls[index];
       const imageKey = imageUrl.split("/").pop();
 
       try {
         await axiosInstance.delete(`/s3/delete/${imageKey}`, {
           data: { imageUrl },
         });
-        this.post.image.splice(index, 1); // xoá ảnh theo index
+        this.post.imageUrls.splice(index, 1); // xoá ảnh theo index
       } catch (error) {
         console.error("Lỗi xóa ảnh:", error);
         alert("Không thể xóa ảnh. Vui lòng thử lại.");
       }
     },
+    generateSlug(text) {
+      return text
+        .toLowerCase() // chuyển thành chữ thường
+        .normalize("NFD") // chuyển dấu thành ký tự gốc + dấu
+        .replace(/[\u0300-\u036f]/g, "") // xoá dấu
+        .replace(/[^a-z0-9\s-]/g, "") // xoá ký tự đặc biệt
+        .trim() // xoá khoảng trắng 2 đầu
+        .replace(/\s+/g, "-"); // thay khoảng trắng bằng dấu -
+    },
     async submitPost() {
+      const slug = this.generateSlug(this.post.title);
+
       if (!this.post.categoryId) {
         alert("Vui lòng chọn loại tin.");
         return;
       }
 
-      if (!this.post.image.length) {
-        alert("Vui lòng chọn ít nhất một hình ảnh.");
+      if (this.post.imageUrls.length < 3) {
+        alert("Vui lòng chọn ít nhất 3 hình ảnh.");
         return;
       }
 
@@ -226,10 +367,18 @@ export default {
           title: this.post.title,
           price: this.post.price,
           area: this.post.area,
-          address: this.post.address,
+          provinceCode: String(this.post.provinceCode), // ép thành string
+          provinceName: this.post.provinceName,
+          districtCode: String(this.post.districtCode), // ép thành string
+          districtName: this.post.districtName,
+          wardCode: String(this.post.wardCode), // ép thành string
+          wardName: this.post.wardName,
+          street: this.post.street,
+          project: this.post.project,
           categoryId: Number(this.post.categoryId),
           description: this.post.description,
-          image: this.post.image,
+          imageUrls: this.post.imageUrls,
+          slug: slug,
         });
 
         alert("Tin đã được đăng thành công!");
@@ -244,17 +393,69 @@ export default {
 </script>
 
 <style scoped>
-.preview-img {
+.post-form {
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  margin-bottom: 40px;
+}
+
+.post-form .form-control,
+.post-form .form-select {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
+/* nút đăng tin  */
+.btn-warning {
+  background-color: #f1c150;
+  border: none;
+  font-size: 1.1rem;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(241, 193, 80, 0.5);
+}
+
+.btn-warning:hover {
+  background-color: #e3b13e;
+}
+
+.image-preview-box {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f9f9f9;
+}
+
+.image-preview-box img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
 }
-.position-relative {
-  display: inline-block;
-}
-button.btn-danger {
-  font-size: 0.75rem;
-  line-height: 1;
+
+/* nút xóa  */
+.btn-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
   border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 </style>

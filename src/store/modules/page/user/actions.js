@@ -9,7 +9,7 @@ export default {
       console.log("responseData:", responseData);
 
       const userInfor = await axiosInstance.get(`/user/me`);
-      console.log("Dữ liệu user:", response.data);
+      console.log("Dữ liệu user:", userInfor.data);
       context.commit("setUser", userInfor.data);
     } catch (error) {
       console.log(error);

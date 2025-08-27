@@ -1,118 +1,138 @@
 <template>
-  <div class="container">
+  <div class="container mt-4">
     <h2 class="text-center mb-3">Quản lý người dùng</h2>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>STT</th>
-          <th>Tên người dùng</th>
-          <th>Email</th>
-          <th>Số điện thoại</th>
-          <th>Vai trò</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(user, index) in paginatedUsers" :key="user.id">
-          <td>{{ (currentPage - 1) * itemsPerPage + index + 1 }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.phonenumber }}</td>
-          <td>
-            <span v-if="user.role === 0">Admin</span>
-            <span v-else-if="user.role === 1">Operator</span>
-            <span v-else>User</span>
-          </td>
-          <td>
-            <!-- <button class="btn btn-primary btn-sm" @click="editUser(user)">
-              Sửa
-            </button> -->
-            <button class="btn btn-danger btn-sm" @click="deleteUser(user.id)">
-              Xóa
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
-    <!-- Phân trang -->
-    <nav>
-      <ul class="pagination justify-content-center">
-        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-          <button class="page-link" @click="changePage(currentPage - 1)">
-            <i class="fa-solid fa-backward"></i>
-          </button>
-        </li>
+    <ejs-button @click="excelExport">Export to Excel</ejs-button>
+    <!-- Bảng hiển thị người dùng, phân trang, sắp xếp, chỉnh sửa, nhóm dl, xuất file excel -->
+    <ejs-grid
+      ref="grid"
+      :dataSource="users"
+      :allowPaging="true"
+      :pageSettings="{ pageSize: limit, pageSizes: false, pageSize: 20 }"
+      :allowSorting="true"
+      :editSettings="editSettings"
+      :toolbar="toolbar"
+      @actionBegin="actionBegin"
+      @actionComplete="actionComplete"
+      :allowGrouping="true"
+      :allowExcelExport="true"
+      :allowPdfExport="true"
+    >
+      >
+      <e-columns>
+        <e-column
+          headerText="STT"
+          width="80"
+          textAlign="Center"
+          :valueAccessor="indexAccessor"
+        />
+        <e-column field="username" headerText="Tên người dùng" width="150" />
+        <e-column
+          field="email"
+          :allowGrouping="false"
+          headerText="Email"
+          width="200"
+        />
+        <e-column field="phonenumber" headerText="Số điện thoại" width="150" />
+        <e-column
+          field="role"
+          headerText="Vai trò"
+          width="120"
+          :template="'roleTemplate'"
+        />
+        <e-column
+          headerText="Hành động"
+          width="120"
+          textAlign="Center"
+          :template="'actionTemplate'"
+        />
+      </e-columns>
 
-        <li
-          class="page-item"
-          v-for="page in visiblePages"
-          :key="page"
-          :class="{ active: currentPage === page }"
-        >
-          <button class="page-link" @click="changePage(page)">
-            {{ page }}
-          </button>
-        </li>
+      <!-- Template vai trò -->
+      <template v-slot:roleTemplate="{ data }">
+        <span>
+          {{
+            data.role === 0 ? "Admin" : data.role === 1 ? "Operator" : "User"
+          }}
+        </span>
+      </template>
 
-        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-          <button class="page-link" @click="changePage(currentPage + 1)">
-            <i class="fa-solid fa-forward"></i>
-          </button>
-        </li>
-      </ul>
-    </nav>
+      <!-- Template hành động -->
+      <template v-slot:actionTemplate="{ data }">
+        <button class="btn btn-danger btn-sm" @click="deleteUser(data.id)">
+          Xóa
+        </button>
+      </template>
+    </ejs-grid>
   </div>
 </template>
 
 <script>
+import {
+  GridComponent as EjsGrid,
+  ColumnsDirective,
+  ColumnDirective,
+  Page,
+  Sort,
+  Edit,
+  Toolbar,
+  Group,
+  ExcelExport,
+} from "@syncfusion/ej2-vue-grids";
+import { ButtonComponent as EjsButton } from "@syncfusion/ej2-vue-buttons";
+
 export default {
+  components: {
+    EjsGrid,
+    eColumns: ColumnsDirective,
+    eColumn: ColumnDirective,
+    EjsButton,
+  },
   data() {
     return {
-      currentPage: 1, // Trang hiện tại
-      itemsPerPage: 25, // Số lượng người dùng hiển thị trên mỗi trang
-      maxVisiblePages: 10, // Giới hạn chỉ hiển thị 10 số trang
+      limit: 20,
+      editSettings: {
+        allowEditing: true,
+        allowAdding: true,
+        allowDeleting: true,
+        mode: "Normal", // hoặc 'Dialog', 'Batch'
+      },
+      toolbar: ["Add", "Edit", "Delete", "Update", "Cancel"],
     };
   },
   computed: {
     users() {
-      return this.$store.getters["users/users"] || [];
-    },
-    totalPages() {
-      return Math.ceil(this.users.length / this.itemsPerPage);
-    },
-    paginatedUsers() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.users.slice(start, end);
-    },
-    visiblePages() {
-      const half = Math.floor(this.maxVisiblePages / 2);
-      let startPage = Math.max(1, this.currentPage - half);
-      let endPage = Math.min(
-        this.totalPages,
-        startPage + this.maxVisiblePages - 1
-      );
-
-      if (endPage - startPage + 1 < this.maxVisiblePages) {
-        startPage = Math.max(1, endPage - this.maxVisiblePages + 1);
-      }
-
-      return Array.from(
-        { length: endPage - startPage + 1 },
-        (_, i) => startPage + i
-      );
+      const getuser = this.$store.getters["users/users"] || [];
+      console.log("lấy user bên admin: ", getuser);
+      return getuser;
     },
   },
   methods: {
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-      }
+    deleteUser(id) {
+      console.log("Xóa user", id);
+    },
+    indexAccessor(_, data) {
+      const index = this.users.indexOf(data);
+      return (index + 1).toString();
+    },
+    actionBegin(args) {
+      console.log("Action begin:", args.requestType);
+    },
+    actionComplete(args) {
+      console.log("Action complete:", args.requestType);
+    },
+    excelExport() {
+      this.$refs.grid.excelExport();
     },
   },
-  created() {
-    this.$store.dispatch("users/getUsers");
+  mounted() {
+    this.$store.dispatch("users/getUsers", {
+      page: 1,
+      limit: this.limit,
+    });
+  },
+  provide: {
+    grid: [Page, Sort, Edit, Toolbar, Group, ExcelExport],
   },
 };
 </script>

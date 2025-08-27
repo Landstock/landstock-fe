@@ -4,4 +4,9 @@ module.exports = defineConfig({
   chainWebpack: (config) => {
     config.module.rules.delete("eslint");
   },
+  devServer: {
+    client: {
+      overlay: false,
+    },
+  },
 });

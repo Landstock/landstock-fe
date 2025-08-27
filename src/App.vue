@@ -1,18 +1,21 @@
 <template>
   <Header v-if="!isAdminPage"></Header>
   <router-view></router-view>
+  <back-to-top></back-to-top>
   <Footer v-if="!isAdminPage"></Footer>
 </template>
 
 <script>
 import Footer from "./components/nav/Footer.vue";
 import Header from "./components/nav/Header.vue";
+import BackToTop from "./components/backtotop/BackToTop.vue";
 
 export default {
   name: "App",
   components: {
     Header,
     Footer,
+    BackToTop,
   },
   computed: {
     isAdminPage() {
@@ -34,7 +37,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch("autoLogin");
+    this.$store.dispatch("auth/autoLogin");
   },
 };
 </script>

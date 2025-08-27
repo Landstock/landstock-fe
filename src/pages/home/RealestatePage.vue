@@ -4,7 +4,7 @@
     <div class="position-relative">
       <img
         class="w-100"
-        src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/08/slider-2.jpg"
+        src="	https://bds49.giaodienwebmau.com/wp-content/uploads/2020/08/slider-2.jpg"
         alt=""
       />
       <div
@@ -40,43 +40,45 @@
       </div>
     </div>
 
+    <!-- Tin tức bất động sản -->
+    <new-realestate></new-realestate>
+
     <!-- Dự án nổi bật -->
-    <div class="container">
-      <div class="row">
-        <div class="my-4 tilte text-center">
-          <h2>Dự án <span>nổi bật</span></h2>
-          <img
-            src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
-            alt=""
-          />
-        </div>
-        <div
-          class="col-lg-3 col-md-6 col-sm-12 my-4"
-          v-for="(property, index) in properties"
-          :key="index"
-        >
-          <div class="image-wrapper">
-            <img :src="property.image" alt="" />
-            <div class="proper-text">
-              <p class="title">{{ property.title }}</p>
-              <p class="address">{{ property.address }}</p>
+    <div class="bg-color">
+      <div class="container">
+        <div class="row">
+          <div class="my-4 tilte text-center">
+            <h2>Các dự án <span>tại các thành phố</span></h2>
+            <img
+              src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
+              alt=""
+            />
+          </div>
+          <div
+            class="col-lg-3 col-md-6 col-sm-12 my-4"
+            v-for="(property, index) in properties"
+            :key="index"
+          >
+            <div class="image-wrapper">
+              <img :src="property.image" alt="" />
+              <div class="proper-text">
+                <p class="title">{{ property.title }}</p>
+                <p class="address">{{ property.address }}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="col-12 d-flex justify-content-center">
-          <router-link to="/danh-sach-du-an">
-            <button class="btn-color mb-5 px-4 py-2">Xem tất cả</button>
-          </router-link>
+          <div class="col-12 d-flex justify-content-center">
+            <router-link to="/danh-sach-du-an">
+              <button class="btn-color mb-5 px-4 py-2">Xem tất cả</button>
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tin tức bất động sản -->
-    <new-realestate></new-realestate>
-
     <!-- Thông tin uy tín -->
-    <div class="bg-color">
+    <div>
       <section-content></section-content>
     </div>
   </section>
@@ -170,7 +172,7 @@ export default {
 }
 
 .box-search {
-  background: rgba(0, 0, 0, 0.45);
+  /* background: #ffffff20; */
   border-radius: 8px;
   color: #fff;
   padding: 20px;

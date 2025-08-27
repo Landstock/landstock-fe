@@ -1,15 +1,15 @@
 import axiosInstance from "@/services/AxiosServices";
 
 export default {
-  async getUsers(context) {
+  async getUsers(context, { page = 1, limit = 20 }) {
     try {
-      // gọi danh sách tất cả ng dùng admin quản lý
-      const response = await axiosInstance.get("/user/all");
+      const response = await axiosInstance.get(
+        `/user/all?page=${page}&limit=${limit}`
+      );
       const responseData = response.data;
-      console.log("response.data của user:", responseData);
 
-      // Lấy danh sách user từ responseData.data
-      const users = responseData.data.map((user) => ({
+      // Lấy danh sách user từ response và định dạng lại
+      const users = responseData.data.data.map((user) => ({
         id: user._id,
         username: user.username,
         email: user.email,
@@ -17,9 +17,10 @@ export default {
         role: user.role,
       }));
 
+      console.log("Danh sách users:", users);
+
       context.commit("setUsers", users);
-      // eslint-disable-next-line no-debugger
-      // debugger;
+      context.commit("setTotal", responseData.data.total); // Gửi tổng số lượng user
     } catch (error) {
       console.error("Lỗi khi lấy danh sách người dùng:", error);
     }

@@ -84,7 +84,7 @@ export default {
       console.log("Remember Me:", this.rememberMe);
 
       try {
-        await this.$store.dispatch("login", {
+        await this.$store.dispatch("auth/login", {
           email: this.email,
           password: this.password,
         });

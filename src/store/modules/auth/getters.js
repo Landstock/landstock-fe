@@ -11,4 +11,8 @@ export default {
   isAuthentication(state) {
     return !!state.token;
   },
+
+  role(state) {
+    return state.role;
+  },
 };

@@ -1,37 +1,34 @@
 import axiosInstance from "@/services/AxiosServices";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   async login(context, payload) {
     try {
-      // Đăng nhập và lấy access_token
+      // Gọi API đăng nhập
       const response = await axiosInstance.post("/auth/login", {
         email: payload.email,
         password: payload.password,
       });
 
       const responseData = response.data;
-      console.log("Response từ API:", response.data);
+      const token = responseData.token.access_token;
 
-      // Tính thời gian hết hạn token
-      const expiresIn = +responseData.token.access_token.expiresIn * 1000; // giờ đã đúng
-      const expirationDate = new Date().getTime() + expiresIn;
+      // ✅ Giải mã token để lấy thời gian hết hạn
+      const decodedToken = jwtDecode(token);
+      const expirationDate = decodedToken.exp * 1000; // Đổi sang milliseconds
 
-      // Lưu access_token vào localStorage và thời gian hết hạn
-      localStorage.setItem("token", responseData.token.access_token);
+      // ✅ Lưu token và thời gian hết hạn vào localStorage
+      localStorage.setItem("token", token);
       localStorage.setItem("tokenExpiration", expirationDate);
 
-      // Commit access_token vào state Vuex
+      // ✅ Commit token vào Vuex
       context.commit("setUser", {
-        token: responseData.token.access_token,
+        token,
         tokenExpiration: expirationDate,
       });
 
-      // eslint-disable-next-line no-debugger
-      // debugger;
-
-      // Lấy thông tin người dùng
+      // ✅ Gọi API để lấy thông tin user
       const userInfo = await axiosInstance.get("/user/me");
-      // console.log("User Info đây:", userInfo.data);
 
       const email = userInfo.data.data.email;
       const role = userInfo.data.data.role;
@@ -41,12 +38,8 @@ export default {
 
       context.commit("setUserEmail", { userEmail: email });
       context.commit("setUserRole", { role });
-      // Tự động logout khi token hết hạn
-      // setTimeout(() => {
-      //   context.dispatch("logout");
-      // }, expiresIn);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw new Error(
         error.response?.data?.message || "Đăng nhập không thành công"
       );
@@ -81,44 +74,45 @@ export default {
   },
 
   autoLogin(context) {
-    const token = localStorage.getItem("token");
-    const expirationDate = Number(localStorage.getItem("tokenExpiration"));
+    return new Promise((resolve) => {
+      const token = localStorage.getItem("token");
+      const expirationDate = Number(localStorage.getItem("tokenExpiration"));
+      const now = new Date().getTime();
 
-    const now = new Date().getTime();
+      if (!token || !expirationDate || now >= expirationDate) {
+        return resolve(); // Không có hoặc hết hạn → resolve luôn
+      }
 
-    if (!token || !expirationDate || now >= expirationDate) {
-      return; // token hết hạn rồi
-    }
+      const email = localStorage.getItem("email");
+      const role = localStorage.getItem("role");
 
-    const email = localStorage.getItem("email");
-    const role = localStorage.getItem("role");
+      context.commit("setUser", {
+        token,
+        tokenExpiration: expirationDate,
+      });
 
-    context.commit("setUser", {
-      token,
-      tokenExpiration: expirationDate,
+      if (email) context.commit("setUserEmail", { userEmail: email });
+      if (role) context.commit("setUserRole", { role });
+
+      // Tự động logout khi token hết hạn
+      const timeLeft = expirationDate - now;
+      setTimeout(() => {
+        context.dispatch("logout");
+      }, timeLeft);
     });
-
-    if (email) context.commit("setUserEmail", { userEmail: email });
-    if (role) context.commit("setUserRole", { role });
-
-    // tính thời gian còn lại và tự logout
-    const timeLeft = +expirationDate - now;
-    setTimeout(() => {
-      context.dispatch("logout");
-    }, timeLeft);
   },
 
   logout(context) {
     localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("email");
-
     localStorage.removeItem("tokenExpiration");
+    localStorage.removeItem("email");
+    localStorage.removeItem("role");
 
     context.commit("setUser", {
       token: null,
-      role: null,
-      userEmail: null,
+      tokenExpiration: null,
     });
+    context.commit("setUserEmail", { userEmail: null });
+    context.commit("setUserRole", { role: null });
   },
 };

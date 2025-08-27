@@ -7,6 +7,7 @@ export default {
   state() {
     return {
       adminPosts: [],
+      total: 0,
     };
   },
   actions,
