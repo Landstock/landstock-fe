@@ -15,16 +15,40 @@
 
         <div v-else class="row">
           <div
-            class="out-item col-lg-4 col-md-4 col-sm-12 mb-4"
+            class="out-item col-lg-4 col-md-6 col-sm-12 mb-4"
             v-for="post in postall"
             :key="post.id"
           >
+            <!-- Debug info - ĐẶT Ở ĐÂY -->
+            <!-- <div style="background: yellow; padding: 5px; font-size: 12px">
+              <p>Debug - Post ID: {{ post.id }}</p>
+              <p>
+                Debug - ImageUrls length:
+                {{ post.imageUrls ? post.imageUrls.length : "undefined" }}
+              </p>
+              <p>
+                Debug - First Image:
+                {{
+                  post.imageUrls && post.imageUrls[0]
+                    ? post.imageUrls[0]
+                    : "No image"
+                }}
+              </p>
+            </div> -->
             <router-link
               :to="`/chi-tiet/${post.slug}`"
               class="image-wrapper-link"
             >
               <div class="image-wrapper">
-                <img :src="post.imageUrls?.[0]" :alt="post.title" />
+                <img
+                  :src="
+                    post.imageUrls.length > 0
+                      ? post.imageUrls[0]
+                      : '/no-image.png'
+                  "
+                  :alt="post.title"
+                />
+
                 <div class="description-overlay">
                   <p>{{ post.description }}</p>
                 </div>
@@ -106,7 +130,7 @@
       </div>
 
       <!-- Sidebar -->
-      <div class="col-lg-3">
+      <div class="col-lg-3 mb-3">
         <Sidebar />
       </div>
     </div>

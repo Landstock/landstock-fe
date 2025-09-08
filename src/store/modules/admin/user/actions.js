@@ -1,14 +1,14 @@
 import axiosInstance from "@/services/AxiosServices";
 
 export default {
-  async getUsers(context, { page = 1, limit = 20 }) {
+  async getUsers({ commit }, { page = 1, limit = 20 } = {}) {
     try {
       const response = await axiosInstance.get(
         `/user/all?page=${page}&limit=${limit}`
       );
       const responseData = response.data;
 
-      // Lấy danh sách user từ response và định dạng lại
+      // Xử lý dữ liệu user từ API
       const users = responseData.data.data.map((user) => ({
         id: user._id,
         username: user.username,
@@ -16,13 +16,32 @@ export default {
         phonenumber: user.phonenumber,
         role: user.role,
       }));
+      console.log("lấy dl user: ", users);
 
-      console.log("Danh sách users:", users);
-
-      context.commit("setUsers", users);
-      context.commit("setTotal", responseData.data.total); // Gửi tổng số lượng user
+      commit("setUsers", users);
+      commit("setTotal", responseData.data.total);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách người dùng:", error);
+    }
+  },
+
+  async updateUser({ commit }, payload) {
+    try {
+      console.log("Dữ liệu update gửi đi:", payload);
+
+      const response = await axiosInstance.put(`/user/${payload.id}`, payload);
+
+      commit("updateUser", response.data);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật người dùng:", error);
+    }
+  },
+  async deleteUser({ commit }, userId) {
+    try {
+      await axiosInstance.delete(`/user/${userId}`);
+      commit("deleteUser", userId);
+    } catch (error) {
+      console.error("Lỗi khi xóa người dùng:", error);
     }
   },
 };

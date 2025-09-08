@@ -44,7 +44,9 @@ import UserInfor from "./pages/home/user/UserInfor.vue";
 import EditUser from "./pages/admin/user/EditUser.vue";
 import PostManager from "./pages/admin/for/PostManager.vue";
 
-// import Dashboard from "./pages/admin/dashboard/Dashboard.vue";
+import Dashboard from "./pages/admin/dashboard/Dashboard.vue";
+import Post from "./pages/admin/for/Post.vue";
+import SearchPage from "./pages/home/search-page/SearchPage.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -65,15 +67,16 @@ const router = createRouter({
     { path: "/tin-tuc/:slug", component: NewDetail, props: true },
 
     { path: "/ve-chung-toi", component: AboutUs },
+    { path: "/search", component: SearchPage },
     // thông tin ng dùng
     {
       path: "/thong-tin",
       component: Information,
       children: [
-        { path: "", component: UserInfor },
         { path: "/dang-tin", component: PostNews },
         { path: "/danh-sach-tin-dang", component: ListPosts },
         { path: "/sua-tin-dang/:id", component: EditPost },
+        { path: "/thong-tin-ca-nhan", component: UserInfor },
         { path: "/sua-thong-tin-ca-nhan", component: EditProfile },
       ],
     },
@@ -84,10 +87,12 @@ const router = createRouter({
       component: AdminLayout,
       meta: { requiresAuth: true },
       children: [
-        // { path: "", component: Dashboard },
+        { path: "", redirect: "/admin/dashboard" },
+        { path: "dashboard", component: Dashboard },
         { path: "users", component: UserManagement },
         { path: "users-user", component: EditUser },
         { path: "quan-ly-loai-tin", component: CategoryManagement },
+        { path: "quan-ly-bai-dang", component: Post },
         {
           path: "quan-ly-danh-sach-ban/:id",
           component: PostManager,

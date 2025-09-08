@@ -40,7 +40,7 @@ onMounted(async () => {
 });
 </script>
 
-<style>
+<style scoped>
 /* Căn giữa ảnh trong mọi div chứa nội dung tin tức */
 .col-9 img {
   display: block;

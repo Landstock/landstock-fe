@@ -82,6 +82,38 @@
       </div>
     </div>
   </div>
+  <!-- Pagination -->
+  <nav v-if="totalPages > 1" aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li
+        class="page-item"
+        :class="{ disabled: currentPage === 1 }"
+        v-if="currentPage > 1"
+        @click="goToPage(currentPage - 1)"
+      >
+        <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
+      </li>
+
+      <li
+        v-for="page in totalPages"
+        :key="page"
+        class="page-item"
+        :class="{ active: currentPage === page }"
+        @click="goToPage(page)"
+      >
+        <a class="page-link" href="#">{{ page }}</a>
+      </li>
+
+      <li
+        class="page-item"
+        :class="{ disabled: currentPage === totalPages }"
+        v-if="currentPage < totalPages"
+        @click="goToPage(currentPage + 1)"
+      >
+        <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
+      </li>
+    </ul>
+  </nav>
 </template>
 
 <script>
@@ -99,6 +131,10 @@ export default {
       posts: [],
       loading: false,
       apiResponse: null,
+      currentPage: 1,
+      limit: 8, // mỗi trang 8 bài
+      total: 0,
+      totalPages: 0,
     };
   },
 
@@ -107,6 +143,7 @@ export default {
       handler(newSlug) {
         console.log("RelatedProperties - currentSlug changed:", newSlug);
         if (newSlug && newSlug !== "undefined") {
+          this.currentPage = 1;
           this.fetchRelatedPosts();
         }
       },
@@ -126,35 +163,51 @@ export default {
 
       try {
         this.loading = true;
+
         console.log("RelatedProperties - Fetching for slug:", this.currentSlug);
 
         const response = await axiosInstance.get(
-          `/posts/related/${this.currentSlug}`
+          `/posts/related/${this.currentSlug}`,
+          {
+            params: {
+              page: this.currentPage,
+              limit: this.limit,
+            },
+          }
         );
 
         console.log("RelatedProperties - API Response:", response.data);
 
-        if (Array.isArray(response.data)) {
-          this.posts = response.data;
-        } else if (response.data.data && Array.isArray(response.data.data)) {
-          this.posts = response.data.data;
-        } else if (response.data.items && Array.isArray(response.data.items)) {
-          this.posts = response.data.items;
+        // API trả về { items, total, page, limit }
+        if (response.data && Array.isArray(response.data.data.items)) {
+          this.posts = response.data.data.items;
+          this.total = response.data.data.total;
+          this.limit = response.data.data.limit;
+          this.currentPage = response.data.data.page;
+          this.totalPages = Math.ceil(this.total / this.limit);
         } else {
           console.warn(
             "RelatedProperties - Unexpected response structure:",
             response.data
           );
           this.posts = [];
+          this.totalPages = 0;
         }
-
-        console.log("RelatedProperties - Posts set:", this.posts);
       } catch (error) {
         console.error("RelatedProperties - Error:", error);
         this.posts = [];
+        this.totalPages = 0;
       } finally {
         this.loading = false;
       }
+    },
+
+    goToPage(page) {
+      if (page < 1 || page > this.totalPages || page === this.currentPage) {
+        return;
+      }
+      this.currentPage = page;
+      this.fetchRelatedPosts();
     },
 
     getFullAddress(property) {

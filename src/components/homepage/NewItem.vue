@@ -112,41 +112,89 @@ export default {
   name: "OutstandingProperties",
   data() {
     return {
-      properties: [],
+      properties: { posts: [] },
       loading: true,
     };
   },
   methods: {
+    async fetchLatestProperties() {
+      try {
+        this.loading = true;
+        console.log("Bắt đầu fetch properties...");
+
+        // Lấy 8 bài đăng mới nhất
+        await this.$store.dispatch("posts/getAllPosts", {
+          page: 1,
+          limit: 8,
+        });
+
+        // Debug: Kiểm tra state
+        console.log("Store state:", this.$store.state);
+        console.log("Posts state:", this.$store.state.posts);
+
+        // Lấy data từ state
+        const posts = this.$store.state.posts.posts || [];
+        console.log("Posts from store:", posts);
+        console.log("Posts length:", posts.length);
+
+        if (posts.length === 0) {
+          console.warn("Không có posts nào!");
+          this.properties = { posts: [] };
+          return;
+        }
+
+        // SỬA: Gán đúng structure để khớp với template
+        this.properties = {
+          posts: posts.map((post) => ({
+            id: post.id,
+            slug: post.slug,
+            imageUrls: post.imageUrls || [
+              "https://placehold.co/400x250?text=Không+có+ảnh&font=roboto",
+            ],
+            title: post.title,
+            price: post.price,
+            area: post.area,
+            description: post.description,
+            category: post.category,
+            views: post.views,
+            street: post.street,
+            wardName: post.wardName,
+            districtName: post.districtName,
+            provinceName: post.provinceName,
+          })),
+        };
+
+        console.log("Final properties:", this.properties);
+        console.log("Final properties.posts:", this.properties.posts);
+      } catch (error) {
+        console.error("Lỗi khi lấy bất động sản mới nhất:", error);
+        this.properties = { posts: [] };
+      } finally {
+        this.loading = false;
+        console.log("Loading finished");
+      }
+    },
+
     getFullAddress(property) {
-      // Tạo mảng chứa các phần của địa chỉ dựa trên dữ liệu từ action getTopViewedPosts
       const addressParts = [];
 
-      // Thêm tên đường nếu có
       if (property.street) {
         addressParts.push(property.street);
       }
-
-      // Thêm phường/xã (từ wardName)
       if (property.wardName) {
         addressParts.push(property.wardName);
       }
-
-      // Thêm quận/huyện (từ districtName)
       if (property.districtName) {
         addressParts.push(property.districtName);
       }
-
-      // Thêm tỉnh/thành phố (từ provinceName)
       if (property.provinceName) {
         addressParts.push(property.provinceName);
       }
 
-      // Nối các phần với dấu phẩy, lọc bỏ các phần trống
       const fullAddress = addressParts
         .filter((part) => part && part.trim())
         .join(", ");
 
-      // Trả về địa chỉ đầy đủ hoặc thông báo nếu không có
       return fullAddress || "Chưa có địa chỉ";
     },
 
@@ -156,20 +204,8 @@ export default {
     },
   },
   async mounted() {
-    try {
-      this.loading = true;
-
-      // Gọi action getTopViewedPosts từ Vuex
-      await this.$store.dispatch("posts/getTopViewedPosts");
-
-      // Lấy dữ liệu từ state sau khi đã commit
-      this.properties = this.$store.state.posts; // posts là state chứa danh sách bài đăng
-      console.log("chứa danh sách:", this.$store.state.posts);
-    } catch (error) {
-      console.error("Lấy bài đăng có lượt xem cao nhất lỗi:", error);
-    } finally {
-      this.loading = false;
-    }
+    console.log("Component mounted");
+    await this.fetchLatestProperties();
   },
 };
 </script>

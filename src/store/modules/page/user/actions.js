@@ -3,7 +3,7 @@ import axiosInstance from "@/services/AxiosServices";
 export default {
   async updateUser(context, payload) {
     try {
-      const response = await axiosInstance.put(`/user/update`, payload);
+      const response = await axiosInstance.put(`/user/update/me`, payload);
       const responseData = response.data;
 
       console.log("responseData:", responseData);

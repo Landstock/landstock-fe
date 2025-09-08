@@ -1,18 +1,28 @@
 <script setup>
 import axiosInstance from "@/services/AxiosServices";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 
+const store = useStore();
 const route = useRoute();
 
-const categories = [
-  { name: "Nhà đất bán", path: "/danh-sach/mua-ban-nha-dat" },
-  { name: "Biệt thự bán", path: "/danh-sach/mua-ban-biet-thu" },
-  { name: "Chung cư bán", path: "/danh-sach/mua-ban-chung-cu" },
-  { name: "Nhà cho thuê", path: "/danh-sach/cho-thue-nha" },
-  { name: "Căn hộ cho thuê", path: "/danh-sach/cho-thue-can-ho" },
-  { name: "Chung cư cho thuê", path: "/danh-sach/cho-thue-chung-cu" },
-];
+const categories = computed(() => store.state.category.category || []);
+
+const danhMuc = computed(() => [
+  ...categories.value
+    .filter((cat) => cat.type === "ban")
+    .map((cat) => ({
+      name: cat.name,
+      path: `/danh-sach/${cat.slug}`,
+    })),
+  ...categories.value
+    .filter((cat) => cat.type === "chothue")
+    .map((cat) => ({
+      name: cat.name,
+      path: `/danh-sach/${cat.slug}`,
+    })),
+]);
 
 const latestNews = ref([]);
 
@@ -39,7 +49,7 @@ const getFirstImage = (html) => {
     <div class="mb-4">
       <h5 class="fw-bold border-bottom pb-2">Danh mục</h5>
       <ul class="list-unstyled mb-0">
-        <li v-for="(item, index) in categories" :key="index" class="mb-2">
+        <li v-for="(item, index) in danhMuc" :key="index" class="mb-2">
           <router-link
             :to="item.path"
             class="category-link d-flex align-items-center text-decoration-none"

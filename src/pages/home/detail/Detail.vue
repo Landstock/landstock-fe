@@ -90,10 +90,10 @@
           <div
             class="price-wrapper d-flex justify-content-between align-items-center mb-3"
           >
-            <h4 class="fw-bold mb-0">{{ property.price }} triệu</h4>
+            <h4 class="fw-bold mb-0">{{ property.price }}</h4>
             <div class="text-end">
               <i class="fas fa-expand-arrows-alt me-1"></i>
-              Diện tích: {{ property.area }} m²
+              Diện tích: {{ property.area }}
             </div>
           </div>
 
@@ -153,7 +153,7 @@
       </div>
     </div>
 
-    <!-- ✅ Chỉ render RelatedProperties khi có property.slug -->
+    <!-- Chỉ render RelatedProperties khi có property.slug -->
     <RelatedProperties v-if="property.slug" :currentSlug="property.slug" />
   </div>
 </template>

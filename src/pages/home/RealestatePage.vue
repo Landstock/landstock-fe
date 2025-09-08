@@ -3,40 +3,72 @@
     <!-- banner  -->
     <div class="position-relative">
       <img
-        class="w-100"
+        class="banner-img"
         src="	https://bds49.giaodienwebmau.com/wp-content/uploads/2020/08/slider-2.jpg"
         alt=""
       />
       <div
         class="position-absolute top-50 start-50 translate-middle search-container"
       >
-        <div class="text-white text-center text-uppercase pb-3">
-          <h2 style="font-size: 40px">Trang tin bất động sản số 1 Việt Nam</h2>
+        <div class="text-white text-center text-uppercase">
+          <h2 class="banner-title">Tìm kiếm bất động sản dự án</h2>
+          <h6>Tìm dự án nhà đất phù hợp với nhu cầu của bạn</h6>
         </div>
+
         <div class="box-search">
           <search></search>
+        </div>
+        <!-- Category Icons -->
+        <div
+          class="category-icons d-flex justify-content-evenly text-center flex-wrap gap-3"
+        >
+          <router-link
+            v-for="item in categories"
+            :key="item.slug"
+            :to="`/danh-sach/${item.slug}`"
+            class="category-item text-decoration-none"
+          >
+            <img
+              v-if="item.icon"
+              :src="item.icon"
+              alt="icon"
+              class="img-fluid"
+              style="margin-bottom: 10px"
+            />
+            <h3>{{ item.name }}</h3>
+          </router-link>
         </div>
       </div>
     </div>
 
-    <!-- Bất động sản nổi bật -->
+    <!-- Bất động sản mới nhất -->
     <div class="container">
       <div class="row mb-4">
         <div class="mt-5 tilte text-center">
-          <h2>Bất động sản <span>nổi bật</span></h2>
+          <h2>Bất động sản <span>mới nhất</span></h2>
+
           <img
             src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
             alt=""
           />
         </div>
-        <outstanding-item></outstanding-item>
+        <new-item></new-item>
       </div>
     </div>
 
-    <!-- Nhà đất nổi bật -->
+    <!-- Bất động sản nổi bật -->
     <div class="bg-color py-4">
       <div class="container">
-        <house-item></house-item>
+        <div class="row mb-4">
+          <div class="mt-5 tilte text-center">
+            <h2>Bất động sản <span>nổi bật</span></h2>
+            <img
+              src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
+              alt=""
+            />
+          </div>
+          <outstanding-item></outstanding-item>
+        </div>
       </div>
     </div>
 
@@ -45,36 +77,7 @@
 
     <!-- Dự án nổi bật -->
     <div class="bg-color">
-      <div class="container">
-        <div class="row">
-          <div class="my-4 tilte text-center">
-            <h2>Các dự án <span>tại các thành phố</span></h2>
-            <img
-              src="https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/bg_title.png"
-              alt=""
-            />
-          </div>
-          <div
-            class="col-lg-3 col-md-6 col-sm-12 my-4"
-            v-for="(property, index) in properties"
-            :key="index"
-          >
-            <div class="image-wrapper">
-              <img :src="property.image" alt="" />
-              <div class="proper-text">
-                <p class="title">{{ property.title }}</p>
-                <p class="address">{{ property.address }}</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 d-flex justify-content-center">
-            <router-link to="/danh-sach-du-an">
-              <button class="btn-color mb-5 px-4 py-2">Xem tất cả</button>
-            </router-link>
-          </div>
-        </div>
-      </div>
+      <projects-by-city></projects-by-city>
     </div>
 
     <!-- Thông tin uy tín -->
@@ -89,18 +92,45 @@ import Search from "@/components/nav/Search.vue";
 import OutstandingItem from "@/components/homepage/OutstandingItem.vue";
 import NewRealestate from "./realestatenew/NewRealestate.vue";
 import SectionContent from "./sectioncontent/SectionContent.vue";
-import HouseItem from "@/components/homepage/HouseItem.vue";
+// import HouseItem from "@/components/homepage/HouseItem.vue";
+import ProjectsByCity from "./project-bycity/ProjectsByCity.vue";
+import NewItem from "@/components/homepage/NewItem.vue";
 
 export default {
   components: {
     Search,
     OutstandingItem,
-    HouseItem,
+    // HouseItem,
     NewRealestate,
     SectionContent,
+    ProjectsByCity,
+    NewItem,
   },
   data() {
     return {
+      categories: [
+        {
+          name: "Căn hộ",
+          slug: "can-ho",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_1.png?1753167401033",
+        },
+        {
+          name: "Biệt thự",
+          slug: "biet-thu-ban",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_2.png?1753167401033",
+        },
+        {
+          name: "Chung cư",
+          slug: "chung-cu",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_3.png?1753167401033",
+        },
+        {
+          name: "Nhà",
+          slug: "nha-dat-ban",
+          icon: "https://bizweb.dktcdn.net/100/393/384/themes/894826/assets/collection_4.png?1753167401033",
+        },
+      ],
+
       properties: [
         {
           id: 1,
@@ -166,6 +196,47 @@ export default {
 }
 
 /* banner */
+/* Ảnh banner mặc định */
+.banner-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Tiêu đề mặc định */
+.banner-title {
+  font-size: 40px;
+  margin-top: 70px;
+}
+
+/* Tablet: từ 768px đến 991px */
+@media (min-width: 768px) and (max-width: 991px) {
+  .banner-img {
+    width: auto;
+    max-width: 100%;
+    height: 610px;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .banner-title {
+    margin-top: 0;
+  }
+}
+
+/* Mobile: dưới 768px */
+@media (max-width: 767px) {
+  .banner-img {
+    width: 100%;
+    height: 700px;
+  }
+
+  .banner-title {
+    font-size: 24px;
+    margin-top: 145px;
+  }
+}
+
 .search-container {
   width: 80%;
   max-width: 1200px;
@@ -176,6 +247,36 @@ export default {
   border-radius: 8px;
   color: #fff;
   padding: 20px;
+}
+
+.category-item {
+  width: 80px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+.category-item:hover {
+  transform: scale(1.2);
+}
+.category-item .img {
+  /* font-size: 15px; */
+  color: white;
+}
+.category-item h3 {
+  font-size: 15px;
+  color: white;
+}
+.category-item:hover h3 {
+  color: #2f80ed;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 /* nhà đất nổi bật */

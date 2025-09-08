@@ -30,7 +30,7 @@
               />
             </div>
             <!-- check mk  -->
-            <div class="">
+            <!-- <div class="">
               <div class="form-check">
                 <input
                   type="checkbox"
@@ -47,7 +47,7 @@
                   Quên mật khẩu? Vui lòng nhấn vào đây
                 </a>
               </div>
-            </div>
+            </div> -->
             <!-- button đăng nhập  -->
             <div class="text-center">
               <button type="submit" class="btn btn-danger my-3 px-5">

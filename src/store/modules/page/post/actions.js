@@ -72,7 +72,7 @@ export default {
 
       context.commit("setPost", posts);
 
-      context.commit("setTotalPost", responseData.total);
+      context.commit("setTotalPosts", responseData.total);
       return posts;
     } catch (error) {
       console.log(error);
@@ -81,12 +81,87 @@ export default {
       );
     }
   },
-  // lấy các bài đã đăng của tôi
-  async getPost(context) {
+  // Duyệt hoặc từ chối bài đăng (Admin only)
+  async updatePostStatus(context, { postId, status }) {
     try {
-      const response = await axiosInstance("/posts/myPosts");
+      console.log(`Updating post ${postId} status to: ${status}`);
+
+      const response = await axiosInstance.put(
+        `/posts/update-status/${postId}`,
+        { status }
+      );
+
+      const updatedPost = response.data.data || response.data;
+      console.log("Post status updated:", updatedPost);
+
+      // Nếu duyệt hoặc từ chối, xóa ngay khỏi pending list
+      if (status !== "pending") {
+        context.commit("removePendingPost", postId);
+      }
+
+      return updatedPost;
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        error.response?.data?.message ||
+          "Không thể cập nhật trạng thái bài đăng"
+      );
+    }
+  },
+  // Lấy danh sách bài đăng chờ duyệt (Admin only)
+  async getPendingPosts(context, { page = 1, limit = 12 }) {
+    try {
+      const response = await axiosInstance.get(
+        `/posts/pending?page=${page}&limit=${limit}`
+      );
+
+      const responseData = response.data.data;
+      console.log("Pending posts:", responseData);
+
+      const pendingPosts = responseData.items.map((post) => ({
+        id: post._id,
+        title: post.title,
+        price: post.price,
+        area: post.area,
+        provinceCode: post.provinceCode,
+        provinceName: post.provinceName,
+        districtCode: post.districtCode,
+        districtName: post.districtName,
+        wardCode: post.wardCode,
+        wardName: post.wardName,
+        street: post.street,
+        project: post.project,
+        categoryId: post.category._id,
+        category: post.category.name,
+        description: post.description,
+        imageUrls: post.images?.map((img) => img.url) || [],
+        user: post.user,
+        createdAt: new Date(post.createdAt).toLocaleDateString("vi-VN"),
+        views: post.views,
+        slug: post.slug,
+        status: post.status,
+      }));
+
+      context.commit("setPendingPosts", pendingPosts);
+      context.commit("setTotalPendingPosts", responseData.total);
+
+      return pendingPosts;
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        error.response?.data?.message ||
+          "Không lấy được danh sách bài chờ duyệt"
+      );
+    }
+  },
+  // lấy các bài đã đăng của tôi
+  async getPost(context, { page = 1, limit = 15 }) {
+    try {
+      const response = await axiosInstance(
+        `/posts/myPosts?page=${page}&limit=${limit}`
+      );
       const responseData = response.data;
-      console.log("responseData", responseData);
+      console.log("responseData mypost", responseData);
 
       const { items } = responseData.data;
       const postnew = items.map((post) => ({
@@ -105,10 +180,13 @@ export default {
         categoryId: post.category._id,
         category: post.category.name,
         description: post.description,
+        slug: post.slug,
         imageUrls: post.images?.map((img) => img.url) || [],
         createdAt: new Date(post.createdAt).toLocaleDateString("vi-VN"),
+        status: post.status || "pending",
       }));
       context.commit("setPost", postnew);
+      context.commit("setTotalPosts", response.data.data.total);
     } catch (error) {
       console.log(error);
       throw new Error(
@@ -125,7 +203,7 @@ export default {
       );
 
       const responseData = response.data.data;
-      console.log("responseData ấy bài đăng theo category: ", responseData);
+      console.log("responseData lấy bài đăng theo category: ", responseData);
 
       const sales = responseData.items.map((sale) => ({
         id: sale._id,
@@ -212,7 +290,7 @@ export default {
         project: response.data.project,
         categoryId: response.data.categoryId,
         description: response.data.description,
-        // imageUrls: response.data.images?.map((img) => img.url) || [],
+        imageUrls: response.data.images?.map((img) => img.url) || [],
         createdAt: new Date(response.data.createdAt).toLocaleDateString(
           "vi-VN"
         ),
@@ -320,6 +398,52 @@ export default {
       throw new Error(
         error.response?.data?.message ||
           "Không lấy được bài đăng có lượt xem cao nhất"
+      );
+    }
+  },
+
+  // tìm kiếm
+  async searchPosts(
+    context,
+    { categoryId, provinceName, keyword, page = 1, limit = 12 }
+  ) {
+    try {
+      let posts = [];
+
+      // Lấy bài đăng theo category hoặc tất cả
+      if (categoryId) {
+        await context.dispatch("getAdPost", { categoryId, page, limit });
+        posts = context.state.posts;
+      } else {
+        await context.dispatch("getAllPosts", { page, limit });
+        posts = context.state.posts;
+      }
+
+      // Lọc theo province
+      if (provinceName) {
+        posts = posts.filter((post) => post.provinceName === provinceName);
+      }
+
+      // Lọc theo keyword
+      if (keyword) {
+        const searchTerm = keyword.toLowerCase();
+        posts = posts.filter(
+          (post) =>
+            post.title.toLowerCase().includes(searchTerm) ||
+            post.project.toLowerCase().includes(searchTerm) ||
+            post.street.toLowerCase().includes(searchTerm) ||
+            post.description.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Cập nhật state
+      context.commit("setPost", posts);
+      return posts;
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        error.response?.data?.message ||
+          "Không tìm kiếm được bất động sản đó!!!"
       );
     }
   },

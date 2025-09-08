@@ -23,8 +23,10 @@
         >
           <div class="card shadow-sm news-card">
             <img
-              v-if="getFirstImage(news.content)"
-              :src="getFirstImage(news.content)"
+              :src="
+                getFirstImage(news.content) ||
+                require('@/assets/image/no-image.jpg')
+              "
               class="card-img-top"
               alt="Ảnh đại diện"
               style="height: 200px; object-fit: cover"

@@ -8,6 +8,9 @@ export default {
     return {
       posts: [],
       // adminPosts: [],
+      total: 0,
+      pendingPosts: [],
+      totalPendingPosts: 0,
     };
   },
   actions,
