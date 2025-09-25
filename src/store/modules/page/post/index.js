@@ -7,10 +7,15 @@ export default {
   state() {
     return {
       posts: [],
-      // adminPosts: [],
+      cityProjects: [],
       total: 0,
       pendingPosts: [],
       totalPendingPosts: 0,
+      postsStatistics: {
+        totalPosts: 0,
+        totalBanPosts: 0,
+        totalChoThuePosts: 0,
+      },
     };
   },
   actions,

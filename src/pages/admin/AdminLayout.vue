@@ -441,7 +441,7 @@ export default {
 
 .sidebar.collapsed .nav-link {
   justify-content: center;
-  padding: 12px 8px;
+  padding: 12px 2px;
 }
 
 /* Dropdown Navigation */

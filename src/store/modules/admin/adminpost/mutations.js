@@ -5,4 +5,9 @@ export default {
   setTotal(state, total) {
     state.total = total;
   },
+
+  // hoạt động gần đây
+  setRecentActivities(state, activities) {
+    state.recentActivities = activities;
+  },
 };

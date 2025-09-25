@@ -13,40 +13,46 @@
     </div>
   </div>
 
-  <div class="container news-list py-5">
-    <div class="row">
-      <div class="col-lg-9 d-flex gap-3">
-        <div
-          class="col-lg-4 col-md-6 col-sm-12 mb-4"
-          v-for="news in newsList"
-          :key="news.id"
-        >
-          <div class="card shadow-sm news-card">
-            <img
-              :src="
-                getFirstImage(news.content) ||
-                require('@/assets/image/no-image.jpg')
-              "
-              class="card-img-top"
-              alt="Ảnh đại diện"
-              style="height: 200px; object-fit: cover"
-            />
-            <div class="card-body">
-              <h5 class="card-title fw-bold">
-                <router-link
-                  :to="`/tin-tuc/${news.slug}`"
-                  class="text-decoration-none news-link"
-                >
-                  {{ news.title }}
-                </router-link>
-              </h5>
-              <p class="card-text text-muted">
-                {{ truncateContent(news.content, 100) }}
-              </p>
+  <div class="container news-list">
+    <div class="row pt-5 pb-5">
+      <div class="col-lg-9">
+        <div class="row">
+          <div
+            class="col-lg-4 col-md-6 col-sm-12 mb-4"
+            v-for="news in newsList"
+            :key="news.id"
+          >
+            <div class="card shadow-sm news-card h-100 d-flex flex-column">
+              <img
+                :src="
+                  getFirstImage(news.content) ||
+                  require('@/assets/image/no-image.jpg')
+                "
+                class="card-img-top"
+                alt="Ảnh đại diện"
+                style="height: 200px; object-fit: cover"
+              />
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold flex-grow-0">
+                  <router-link
+                    :to="`/tin-tuc/${news.slug}`"
+                    class="text-decoration-none news-link"
+                  >
+                    {{ news.title }}
+                  </router-link>
+                </h5>
+                <p class="card-text text-muted flex-grow-1">
+                  {{ truncateContent(news.content, 100) }}
+                </p>
+                <div class="mt-auto">
+                  <!-- Nếu bạn muốn thêm nút "Xem chi tiết" thì đặt ở đây -->
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <!-- bên phải  -->
       <div class="col-lg-3 col-sm-12">
         <sidebar />
@@ -162,9 +168,7 @@ const getFirstImage = (html) => {
   inset: 0;
   background-color: rgba(0, 0, 0, 0.4);
 }
-.news-list {
-  padding-top: 60px;
-}
+
 .news-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

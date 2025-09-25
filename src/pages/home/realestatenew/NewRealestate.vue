@@ -1,6 +1,5 @@
 <template>
   <div class="news-wrapper container my-5">
-    <!-- Header -->
     <div
       class="section-header d-flex justify-content-between align-items-center mb-4"
     >

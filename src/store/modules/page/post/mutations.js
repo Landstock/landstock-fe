@@ -25,6 +25,11 @@ export default {
     state.posts = state.posts.filter((p) => p._id != payload);
   },
 
+  // lấy số lượng bài đăng theo type
+  setPostsStatistics(state, stats) {
+    state.postsStatistics = stats;
+  },
+
   // phân trang
   setTotalPosts(state, total) {
     state.total = total;
@@ -52,5 +57,10 @@ export default {
   removePendingPost(state, postId) {
     state.pendingPosts = state.pendingPosts.filter((p) => p.id !== postId);
     state.totalPendingPosts = state.totalPendingPosts - 1;
+  },
+
+  // lấy tỉnh thành
+  setCityProject(state, payload) {
+    state.cityProjects = payload;
   },
 };

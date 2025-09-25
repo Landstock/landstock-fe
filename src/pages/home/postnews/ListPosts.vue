@@ -512,7 +512,7 @@
     <!-- Enhanced Toast -->
     <div
       class="toast-container position-fixed top-0 end-0 p-3"
-      style="z-index: 9999"
+      style="z-index: 2"
     >
       <div
         class="toast modern-toast"
@@ -1105,7 +1105,7 @@ export default {
   position: absolute;
   top: 12px;
   right: 12px;
-  z-index: 2;
+  z-index: 1;
 }
 
 .status-approved {
@@ -1504,7 +1504,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 2;
   backdrop-filter: blur(5px);
 }
 

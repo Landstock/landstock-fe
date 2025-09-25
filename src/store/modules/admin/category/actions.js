@@ -46,6 +46,7 @@ export default {
       // Gửi body không chứa id hay _id
       await axiosInstance.put(`/category/update/${id}`, { name, type });
 
+      await context.dispatch("adminPost/getRecentActivities");
       context.commit("updateCategory", payload);
     } catch (error) {
       console.log(error);
@@ -58,6 +59,7 @@ export default {
   async deleteCategoryManage(context, id) {
     try {
       await axiosInstance.delete(`/category/delete/${id}`);
+      await context.dispatch("adminPost/getRecentActivities");
       context.commit("deleteCategory", id);
     } catch (error) {
       console.log(error);

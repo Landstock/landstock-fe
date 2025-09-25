@@ -75,7 +75,7 @@
     <!-- Tin tức bất động sản -->
     <new-realestate></new-realestate>
 
-    <!-- Dự án nổi bật -->
+    <!-- Các dự án triển khai tại 1 số thành phố -->
     <div class="bg-color">
       <projects-by-city></projects-by-city>
     </div>
@@ -92,7 +92,6 @@ import Search from "@/components/nav/Search.vue";
 import OutstandingItem from "@/components/homepage/OutstandingItem.vue";
 import NewRealestate from "./realestatenew/NewRealestate.vue";
 import SectionContent from "./sectioncontent/SectionContent.vue";
-// import HouseItem from "@/components/homepage/HouseItem.vue";
 import ProjectsByCity from "./project-bycity/ProjectsByCity.vue";
 import NewItem from "@/components/homepage/NewItem.vue";
 

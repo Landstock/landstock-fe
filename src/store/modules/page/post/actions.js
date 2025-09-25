@@ -62,6 +62,7 @@ export default {
         project: post.project,
         categoryId: post.category._id,
         category: post.category.name,
+        type: post.category.type,
         description: post.description,
         imageUrls: post.images?.map((img) => img.url) || [],
         user: post.user,
@@ -81,6 +82,41 @@ export default {
       );
     }
   },
+
+  // Lấy tổng số bài đăng theo type
+  async getPostsCount(context) {
+    try {
+      // Lấy tất cả bài đăng (chỉ để đếm)
+      const response = await axiosInstance.get("/posts/allpost?page=1&limit=1");
+      const total = response.data.data.total;
+
+      // Lấy thống kê chi tiết theo type
+      const allPostsResponse = await axiosInstance.get(
+        `/posts/allpost?page=1&limit=${total}`
+      );
+      const allPosts = allPostsResponse.data.data.items;
+
+      const banCount = allPosts.filter(
+        (post) => post.category.type === "ban"
+      ).length;
+      const choThueCount = allPosts.filter(
+        (post) => post.category.type === "chothue"
+      ).length;
+
+      const stats = {
+        totalPosts: total,
+        totalBanPosts: banCount,
+        totalChoThuePosts: choThueCount,
+      };
+
+      context.commit("setPostsStatistics", stats);
+      return stats;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Không lấy được thống kê bài đăng");
+    }
+  },
+
   // Duyệt hoặc từ chối bài đăng (Admin only)
   async updatePostStatus(context, { postId, status }) {
     try {
@@ -98,7 +134,7 @@ export default {
       if (status !== "pending") {
         context.commit("removePendingPost", postId);
       }
-
+      await context.dispatch("adminPost/getRecentActivities");
       return updatedPost;
     } catch (error) {
       console.log(error);
@@ -133,6 +169,7 @@ export default {
         project: post.project,
         categoryId: post.category._id,
         category: post.category.name,
+        type: post.category.type,
         description: post.description,
         imageUrls: post.images?.map((img) => img.url) || [],
         user: post.user,
@@ -179,6 +216,7 @@ export default {
         project: post.project,
         categoryId: post.category._id,
         category: post.category.name,
+        type: post.category.type,
         description: post.description,
         slug: post.slug,
         imageUrls: post.images?.map((img) => img.url) || [],
@@ -220,6 +258,7 @@ export default {
         project: sale.project,
         categoryId: sale.category._id,
         category: sale.category.name,
+        type: sale.category.type,
         description: sale.description,
         imageUrls: sale.images?.map((img) => img.url) || [],
         user: sale.user,
@@ -227,7 +266,7 @@ export default {
         slug: sale.slug,
       }));
       context.commit("setPost", sales);
-      context.commit("setTotalPost", responseData.total);
+      context.commit("setTotalPosts", responseData.total);
     } catch (error) {
       console.log(error);
       throw new Error(
@@ -289,6 +328,7 @@ export default {
         street: response.data.street,
         project: response.data.project,
         categoryId: response.data.categoryId,
+        type: response.data.category?.type,
         description: response.data.description,
         imageUrls: response.data.images?.map((img) => img.url) || [],
         createdAt: new Date(response.data.createdAt).toLocaleDateString(
@@ -340,6 +380,7 @@ export default {
         project: post.project,
         categoryId: post.category._id,
         category: post.category.name,
+        type: post.category.type,
         description: post.description,
         imageUrls: post.images?.map((img) => img.url) || [],
         createdAt: new Date(post.createdAt).toLocaleDateString("vi-VN"),
@@ -444,6 +485,69 @@ export default {
       throw new Error(
         error.response?.data?.message ||
           "Không tìm kiếm được bất động sản đó!!!"
+      );
+    }
+  },
+
+  // lấy 6 tỉnh thành có nhiều bài đăng nhất
+  async getCityProject(context) {
+    try {
+      const response = await axiosInstance.get("/posts/statistics/by-province");
+      const provinces = response.data.data.data;
+
+      const cities = provinces.map((item) => ({
+        name: item.provinceName,
+        provinceCode: item.provinceCode,
+        projects: item.count,
+        image: `https://picsum.photos/400/220?random=${item.provinceCode}`,
+      }));
+
+      context.commit("setCityProject", cities);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  // Lấy bài đăng theo tỉnh thành
+  async getPostsByProvince(context, { provinceCode, page = 1, limit = 12 }) {
+    try {
+      const response = await axiosInstance.get(
+        `/posts/by-province/${provinceCode}?page=${page}&limit=${limit}`
+      );
+
+      const responseData = response.data.data;
+      console.log("ResponseData bài đăng theo tỉnh: ", responseData);
+
+      const posts = responseData.items.map((post) => ({
+        id: post._id,
+        title: post.title,
+        price: post.price,
+        area: post.area,
+        provinceCode: post.provinceCode,
+        provinceName: post.provinceName,
+        districtCode: post.districtCode,
+        districtName: post.districtName,
+        wardCode: post.wardCode,
+        wardName: post.wardName,
+        street: post.street,
+        project: post.project,
+        categoryId: post.category._id,
+        category: post.category.name,
+        description: post.description,
+        imageUrls: post.images?.map((img) => img.url) || [],
+        user: post.user,
+        createdAt: new Date(post.createdAt).toLocaleDateString("vi-VN"),
+        slug: post.slug,
+      }));
+
+      context.commit("setPost", posts);
+      context.commit("setTotalPosts", responseData.total);
+
+      return posts;
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        error.response?.data?.message || "Không lấy được bài đăng theo tỉnh"
       );
     }
   },

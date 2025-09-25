@@ -134,7 +134,7 @@
         <!-- Header logo + close -->
         <div
           class="menu-header d-flex justify-content-between align-items-center px-3 py-2"
-          style="height: 95px"
+          style="height: 72px"
         >
           <router-link to="/">
             <img
@@ -708,6 +708,10 @@ header.scrolled {
 }
 
 @media (max-width: 767px) {
+  .menu-header {
+    height: 94px !important;
+  }
+
   .logo-container img {
     padding-top: 14px;
   }

@@ -17,7 +17,7 @@ export default {
       };
     }
   },
-  deleteUser(state, userId) {
-    state.users = state.users.filter((user) => user.id !== userId);
+  deleteUser(state, payload) {
+    state.users = state.users.filter((user) => user.id !== payload);
   },
 };

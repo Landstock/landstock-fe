@@ -1,10 +1,10 @@
 <template>
   <div class="container py-5 projects-container">
     <!-- Tiêu đề -->
-    <div class="text-center mb-4">
+    <div class="text-center tilte mb-4">
       <h2>
         Các dự án
-        <span class="highlight">đã triển khai tại một số thành phố</span>
+        <span>đã triển khai tại một số thành phố</span>
       </h2>
     </div>
 
@@ -73,143 +73,39 @@
 </template>
 
 <script>
-import axiosInstance from "@/services/AxiosServices";
-
 export default {
   name: "ProjectsByCity",
   data() {
     return {
-      cities: [],
       loading: true,
-      fallbackCities: [
-        {
-          name: "HÀ NỘI",
-          projects: 0,
-          image:
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/ha-noi.jpg",
-          provinceId: 1,
-        },
-        {
-          name: "TP. HỒ CHÍ MINH",
-          projects: 0,
-          image:
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/nghe-an.jpg",
-          provinceId: 79,
-        },
-        {
-          name: "ĐÀ NẴNG",
-          projects: 0,
-          image:
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/da-nang.jpg",
-          provinceId: 48,
-        },
-        {
-          name: "HẢI PHÒNG",
-          projects: 0,
-          image:
-            "https://bds49.giaodienwebmau.com/wp-content/uploads/2020/07/hai-phong.jpg",
-          provinceId: 31,
-        },
-        {
-          name: "CẦN THƠ",
-          projects: 0,
-          image: "https://i.imgur.com/ZxRoeoJ.jpg",
-          provinceId: 92,
-        },
-      ],
     };
+  },
+  computed: {
+    cities() {
+      return this.$store.state.posts.cityProjects || [];
+    },
   },
   methods: {
     async fetchCityProjects() {
       try {
-        this.loading = true;
-
-        // Lấy thống kê số lượng bài đăng theo tỉnh/thành phố
-        const response = await axiosInstance.get(
-          "/posts/statistics/by-province"
-        );
-        const statistics = response.data.data;
-
-        // Map dữ liệu thống kê với danh sách thành phố fallback
-        this.cities = this.fallbackCities
-          .map((city) => {
-            const stat = statistics.find(
-              (s) => s.provinceId === city.provinceId
-            );
-            return {
-              ...city,
-              projects: stat ? stat.count : 0,
-            };
-          })
-          .filter((city) => city.projects > 0); // Chỉ hiển thị thành phố có dự án
-
-        // Nếu không có dữ liệu từ API, sử dụng fallback
-        if (this.cities.length === 0) {
-          this.cities = this.fallbackCities;
-        }
-
-        console.log("Dữ liệu thành phố:", this.cities);
-      } catch (error) {
-        console.error("Lỗi khi lấy thống kê dự án theo thành phố:", error);
-
-        // Fallback với dữ liệu mẫu
-        this.cities = this.fallbackCities.map((city) => ({
-          ...city,
-          projects: Math.floor(Math.random() * 20) + 5, // Random số từ 5-24
-        }));
+        await this.$store.dispatch("posts/getCityProject");
       } finally {
         this.loading = false;
       }
     },
-
-    async fetchAlternativeData() {
-      try {
-        // Phương án 2: Lấy tất cả posts và group theo province
-        const response = await axiosInstance.get("/posts?limit=1000");
-        const posts = response.data.data.items || response.data.data;
-
-        // Đếm số lượng posts theo province
-        const provinceCounts = {};
-        posts.forEach((post) => {
-          const provinceName = post.provinceName;
-          if (provinceName) {
-            provinceCounts[provinceName] =
-              (provinceCounts[provinceName] || 0) + 1;
-          }
-        });
-
-        // Map với fallback cities
-        this.cities = this.fallbackCities
-          .map((city) => ({
-            ...city,
-            projects: provinceCounts[city.name] || 0,
-          }))
-          .filter((city) => city.projects > 0);
-      } catch (error) {
-        console.error("Lỗi phương án thay thế:", error);
-        this.cities = this.fallbackCities;
-      }
-    },
-
     handleImageError(event) {
       event.target.src =
         "https://via.placeholder.com/400x220/f8f9fa/6c757d?text=Không+có+ảnh";
     },
 
     goToCityProjects(city) {
-      // Chuyển đến trang danh sách BDS của thành phố đó
-      this.$router.push({
-        path: "/danh-sach",
-        query: {
-          province: city.name,
-          provinceId: city.provinceId,
-        },
-      });
+      this.$router.push(
+        `/danh-sach-tinh-thanh?province=${city.provinceCode || city.name}`
+      );
     },
   },
-
-  async mounted() {
-    await this.fetchCityProjects();
+  mounted() {
+    this.fetchCityProjects();
   },
 };
 </script>
@@ -220,9 +116,16 @@ export default {
   border-radius: 10px;
 }
 
-.highlight {
-  color: #3366ff;
-  font-weight: 600;
+.tilte h2 {
+  font-size: 30px;
+}
+
+.tilte:hover {
+  color: red;
+}
+
+.tilte span {
+  color: #00abb8;
 }
 
 /* Loading State */
@@ -339,7 +242,7 @@ export default {
   flex-direction: column;
   align-items: center;
   box-shadow: 0px 4px 12px rgba(255, 59, 48, 0.4);
-  z-index: 2;
+  z-index: 1;
 }
 
 .project-count span {
@@ -362,7 +265,7 @@ export default {
   font-weight: bold;
   font-size: 18px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-  z-index: 2;
+  z-index: 1;
   background: rgba(0, 0, 0, 0.3);
   padding: 8px 12px;
   border-radius: 6px;

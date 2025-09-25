@@ -43,12 +43,35 @@ export default {
   async updateAdPost(context, { id, updateData }) {
     try {
       const response = await axiosInstance.put(`/admin/post/${id}`, updateData);
+      await context.dispatch("adminPost/getRecentActivities");
       return response.data;
     } catch (error) {
       console.error("Lỗi khi cập nhật bài đăng:", error);
       throw new Error(
         error.response?.data?.message || "Không cập nhật được bài đăng"
       );
+    }
+  },
+
+  // lấy hoạt động gần đây
+  async getRecentActivities(context) {
+    try {
+      const response = await axiosInstance.get(
+        "/admin-recent/recent-activities"
+      );
+      console.log("hoạt động gần đây:", response.data);
+
+      const activities = (response.data.data || []).map((item) => ({
+        id: item.id,
+        title: item.title || "Không có tiêu đề",
+        time: new Date(item.time).toLocaleString("vi-VN"),
+        icon: item.icon || "fas fa-bell",
+        iconClass: item.iconClass || "bg-primary",
+      }));
+
+      context.commit("setRecentActivities", activities);
+    } catch (error) {
+      console.error("Lỗi khi tải hoạt động gần đây:", error);
     }
   },
 };

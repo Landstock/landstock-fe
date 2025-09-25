@@ -355,8 +355,15 @@ export default {
 
     async handleImageUpload(event) {
       const files = event.target.files;
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
+
+        // Tạo preview URL tạm thời
+        const localUrl = URL.createObjectURL(file);
+        this.post.imageUrls.push(localUrl);
+
+        // Upload ngầm
         const formData = new FormData();
         formData.append("file", file);
 
@@ -368,14 +375,21 @@ export default {
           });
 
           const imageUrl = response.data.data;
-          this.post.imageUrls.push(imageUrl);
+
+          // 👉 Thay thế preview local bằng link thật từ server
+          const index = this.post.imageUrls.indexOf(localUrl);
+          if (index !== -1) {
+            this.post.imageUrls[index] = imageUrl;
+          }
+
+          // Giải phóng bộ nhớ preview tạm
+          URL.revokeObjectURL(localUrl);
         } catch (error) {
           console.error("Lỗi upload ảnh:", error);
           alert("Không thể upload ảnh. Vui lòng thử lại.");
         }
       }
     },
-
     async removeImage(index) {
       const imageUrl = this.post.imageUrls[index];
       const imageKey = imageUrl.split("/").pop();

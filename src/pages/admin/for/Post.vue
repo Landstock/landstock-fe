@@ -2,7 +2,7 @@
   <div class="container mt-4">
     <h3>Quản lý bài đăng chờ duyệt</h3>
 
-    <!-- DEBUG INFO -->
+    <!-- DEBUG -->
     <!-- <div class="alert alert-info mb-3">
       <strong>Debug Info:</strong><br />
       Pending Posts Length: {{ pendingPosts?.length || 0 }}<br />
@@ -25,7 +25,7 @@
             v-for="post in pendingPosts"
             :key="post.id"
           >
-            <div class="card">
+            <div class="card h-100 d-flex flex-column">
               <img
                 :src="post.imageUrls?.[0] || '/default-image.jpg'"
                 class="card-img-top"
@@ -33,19 +33,24 @@
                 :alt="post.title"
               />
 
-              <div class="card-body">
+              <div class="card-body d-flex flex-column flex-grow-1">
                 <h5 class="card-title">{{ post.title }}</h5>
-                <p class="card-text">
-                  <i class="fas fa-user"></i>
-                  {{ post.user.fullName || post.user.username }}
-                  <br />
-                  <i class="fas fa-tag"></i> {{ post.category }}
-                  <br />
-                  <i class="fas fa-map-marker-alt"></i>
-                  {{ getFullAddress(post) }}
-                  <br />
-                  <strong>{{ post.price }}</strong> - {{ post.area }}m²
-                </p>
+                <div class="card-text flex-grow-1">
+                  <div class="mb-2">
+                    <i class="fas fa-user"></i>
+                    {{ post.user.fullName || post.user.username }}
+                  </div>
+                  <div class="mb-2">
+                    <i class="fas fa-tag"></i> {{ post.category }}
+                  </div>
+                  <div class="mb-2">
+                    <i class="fas fa-map-marker-alt"></i>
+                    {{ getFullAddress(post) }}
+                  </div>
+                  <div class="mb-3">
+                    <strong>{{ post.price }}</strong> - {{ post.area }}m²
+                  </div>
+                </div>
 
                 <!-- Trạng thái -->
                 <div class="mb-3">
@@ -62,9 +67,9 @@
                 </div>
 
                 <!-- Nút duyệt -->
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 mt-auto">
                   <button
-                    class="btn btn-success btn-sm"
+                    class="btn btn-success btn-sm flex-fill"
                     @click="approvePost(post.id)"
                     :disabled="
                       post.status === 'approved' || approving === post.id
@@ -74,7 +79,7 @@
                   </button>
 
                   <button
-                    class="btn btn-danger btn-sm"
+                    class="btn btn-danger btn-sm flex-fill"
                     @click="rejectPost(post.id)"
                     :disabled="
                       post.status === 'rejected' || rejecting === post.id
@@ -85,7 +90,7 @@
 
                   <router-link
                     :to="`/chi-tiet/${post.slug}`"
-                    class="btn btn-info btn-sm"
+                    class="btn btn-info btn-sm flex-fill"
                   >
                     <i class="fas fa-eye"></i> Xem
                   </router-link>
@@ -293,6 +298,7 @@ export default {
 <style scoped>
 .card {
   transition: transform 0.2s;
+  min-height: 100%;
 }
 
 .card:hover {
@@ -304,6 +310,25 @@ export default {
 }
 
 .btn-sm {
-  margin: 0 2px;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Đảm bảo các nút có cùng kích thước */
+.d-flex.gap-2 .btn {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 576px) {
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+
+  .d-flex.gap-2 .btn {
+    margin-bottom: 0.25rem;
+  }
 }
 </style>

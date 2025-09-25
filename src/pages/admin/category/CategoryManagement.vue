@@ -101,6 +101,7 @@
                 <input
                   type="text"
                   class="form-control"
+                  placeholder="Nhà Đất Bán"
                   v-model="category.name"
                   required
                 />

@@ -72,21 +72,6 @@
       <!-- Thông tin bất động sản -->
       <div class="col-md-7 mb-4">
         <div class="description p-4 e rounded">
-          <div class="breadcrumb text-muted mb-2">Trang chủ / Nhà bán</div>
-          <h2 class="mb-3">{{ property.title }}</h2>
-          <p class="mb-2">
-            <i class="fa-solid fa-location-dot me-1 icon-red"></i>
-            {{ getFullAddress(property) }}
-          </p>
-
-          <p class="text-muted">{{ property.description }}</p>
-          <p class="text-muted">Lượt xem: {{ property.views || 0 }}</p>
-        </div>
-      </div>
-
-      <!-- Thông tin liên hệ -->
-      <div class="col-md-5 mb-4">
-        <div class="contact-card p-4 rounded">
           <div
             class="price-wrapper d-flex justify-content-between align-items-center mb-3"
           >
@@ -96,9 +81,21 @@
               Diện tích: {{ property.area }}
             </div>
           </div>
-
           <hr />
+          <h2 class="mb-3">{{ property.title }}</h2>
+          <p class="mb-2">
+            <i class="fa-solid fa-location-dot me-1 icon-red"></i>
+            {{ getFullAddress(property) }}
+          </p>
 
+          <p class="text-muted">{{ property.description }}</p>
+          <!-- <p class="text-muted">Lượt xem: {{ property.views || 0 }}</p> -->
+        </div>
+      </div>
+
+      <!-- Thông tin liên hệ -->
+      <div class="col-md-5 mb-4">
+        <div class="contact-card p-4 rounded">
           <div class="avatar-section d-flex align-items-center mb-3">
             <img
               class="avatar-img me-3"
@@ -147,8 +144,6 @@
               Chat Zalo
             </a>
           </div>
-
-          <hr />
         </div>
       </div>
     </div>
@@ -177,7 +172,7 @@ export default {
   },
   data() {
     return {
-      loading: true, // ✅ Thêm loading state
+      loading: true,
       property: {
         id: "",
         title: "",
@@ -196,7 +191,7 @@ export default {
         user: { username: "", phonenumber: "", avatar: "" },
         views: 0,
         category: "",
-        slug: "", // ✅ Đảm bảo slug được khởi tạo
+        slug: "",
       },
       selectedImageIndex: null,
       modules: [Navigation, Pagination, Scrollbar, A11y],
@@ -209,11 +204,15 @@ export default {
   },
 
   watch: {
-    slug(newSlug, oldSlug) {
-      if (newSlug !== oldSlug) {
-        this.loading = true; // ✅ Set loading khi đổi slug
-        this.fetchPostDetail();
-      }
+    slug: {
+      immediate: true,
+      handler(newSlug, oldSlug) {
+        if (newSlug && newSlug !== oldSlug) {
+          this.loading = true;
+          this.property = { slug: "" };
+          this.fetchPostDetail();
+        }
+      },
     },
   },
 

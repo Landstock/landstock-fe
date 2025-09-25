@@ -1,5 +1,30 @@
 <template>
   <div class="container py-4">
+    <!-- Toast Container -->
+    <div
+      class="toast-container position-fixed top-0 end-0 p-3"
+      style="z-index: 3"
+    >
+      <div
+        ref="successToast"
+        class="toast align-items-center text-white bg-success border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ toastMessage }}
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
+        </div>
+      </div>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="fw-bold">Quản lý người dùng</h2>
 
@@ -201,6 +226,8 @@ export default {
       deleteUserId: null,
       editModalInstance: null,
       deleteModalInstance: null,
+      toastMessage: "",
+      toastInstance: null,
     };
   },
   computed: {
@@ -224,32 +251,58 @@ export default {
       if (role === 1) return "Operator";
       return "User";
     },
+
+    showToast(message) {
+      this.toastMessage = message;
+      if (!this.toastInstance) {
+        this.toastInstance = new bootstrap.Toast(this.$refs.successToast);
+      }
+      this.toastInstance.show();
+    },
+
     openEditModal(user) {
       this.editForm = { ...user };
       const modal = new bootstrap.Modal(this.$refs.editModal);
       modal.show();
       this.editModalInstance = modal;
     },
+
     closeEditModal() {
       this.editModalInstance.hide();
     },
-    async saveUser() {
-      await this.$store.dispatch("users/updateUser", this.editForm);
 
-      this.closeEditModal();
+    async saveUser() {
+      try {
+        await this.$store.dispatch("users/updateUser", this.editForm);
+        this.closeEditModal();
+
+        this.showToast("Cập nhật người dùng thành công!");
+      } catch (error) {
+        console.error("Lỗi khi cập nhật:", error);
+        this.showToast("Có lỗi xảy ra khi cập nhật!");
+      }
     },
+
     confirmDelete(userId) {
       this.deleteUserId = userId;
       const modal = new bootstrap.Modal(this.$refs.deleteModal);
       modal.show();
       this.deleteModalInstance = modal;
     },
+
     closeDeleteModal() {
       this.deleteModalInstance.hide();
     },
+
     async deleteUser() {
-      await this.$store.dispatch("users/deleteUser", this.deleteUserId);
-      this.closeDeleteModal();
+      try {
+        await this.$store.dispatch("users/deleteUser");
+        this.closeDeleteModal();
+        this.showToast("Xóa người dùng thành công!");
+      } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        this.showToast("Có lỗi xảy ra khi xóa!");
+      }
     },
   },
   mounted() {
@@ -266,5 +319,9 @@ export default {
 .table th,
 .table td {
   vertical-align: middle;
+}
+
+.toast-container {
+  z-index: 3;
 }
 </style>

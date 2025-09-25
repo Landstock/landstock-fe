@@ -687,7 +687,7 @@ export default {
 @media (max-width: 768px) {
   .sidebar-modern {
     position: fixed;
-    z-index: 1000;
+    z-index: 1;
     width: 280px;
     transform: translateX(-100%);
     transition: transform 0.3s ease;

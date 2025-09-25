@@ -29,17 +29,24 @@ export default {
     try {
       console.log("Dữ liệu update gửi đi:", payload);
 
-      const response = await axiosInstance.put(`/user/${payload.id}`, payload);
+      const { id, ...updateData } = payload;
 
-      commit("updateUser", response.data);
+      const response = await axiosInstance.put(`/user/${id}`, updateData);
+
+      commit("updateUser", {
+        id: id,
+        ...updateData,
+      });
+
+      console.log("Cập nhật thành công:", response.data);
     } catch (error) {
       console.error("Lỗi khi cập nhật người dùng:", error);
     }
   },
-  async deleteUser({ commit }, userId) {
+  async deleteUser({ commit }, id) {
     try {
-      await axiosInstance.delete(`/user/${userId}`);
-      commit("deleteUser", userId);
+      await axiosInstance.delete(`/user/delete/${id}`);
+      commit("deleteUser", id);
     } catch (error) {
       console.error("Lỗi khi xóa người dùng:", error);
     }

@@ -8,6 +8,7 @@ export default {
     return {
       adminPosts: [],
       total: 0,
+      recentActivities: [],
     };
   },
   actions,
