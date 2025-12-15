@@ -462,7 +462,10 @@ export default {
     //
     async loadPostCategory() {
       try {
-        await this.$store.dispatch("posts/getPosts", { page: 1, limit: 100 });
+        await this.$store.dispatch("posts/getAllPosts", {
+          page: 1,
+          limit: 100,
+        });
       } catch (error) {
         console.error("Lỗi khi tải :", error);
       }

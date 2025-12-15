@@ -444,41 +444,97 @@ export default {
   },
 
   // tìm kiếm
+  // async searchPosts(
+  //   context,
+  //   { categoryId, provinceName, keyword, page = 1, limit = 12 }
+  // ) {
+  //   try {
+  //     let posts = [];
+
+  //     // Lấy bài đăng theo category hoặc tất cả
+  //     if (categoryId) {
+  //       await context.dispatch("getAdPost", { categoryId, page, limit });
+  //       posts = context.state.posts;
+  //     } else {
+  //       await context.dispatch("getAllPosts", { page, limit });
+  //       posts = context.state.posts;
+  //     }
+
+  //     // Lọc theo province
+  //     if (provinceName) {
+  //       posts = posts.filter((post) => post.provinceName === provinceName);
+  //     }
+
+  //     // Lọc theo keyword
+  //     if (keyword) {
+  //       const searchTerm = keyword.toLowerCase();
+  //       posts = posts.filter(
+  //         (post) =>
+  //           post.title.toLowerCase().includes(searchTerm) ||
+  //           post.project.toLowerCase().includes(searchTerm) ||
+  //           post.street.toLowerCase().includes(searchTerm) ||
+  //           post.description.toLowerCase().includes(searchTerm)
+  //       );
+  //     }
+
+  //     // Cập nhật state
+  //     context.commit("setPost", posts);
+  //     return posts;
+  //   } catch (error) {
+  //     console.log(error);
+  //     throw new Error(
+  //       error.response?.data?.message ||
+  //         "Không tìm kiếm được bất động sản đó!!!"
+  //     );
+  //   }
+  // },
+  // actions.js
   async searchPosts(
     context,
     { categoryId, provinceName, keyword, page = 1, limit = 12 }
   ) {
     try {
-      let posts = [];
+      const params = {
+        categoryId,
+        provinceName,
+        keyword,
+        page,
+        limit,
+      };
 
-      // Lấy bài đăng theo category hoặc tất cả
-      if (categoryId) {
-        await context.dispatch("getAdPost", { categoryId, page, limit });
-        posts = context.state.posts;
-      } else {
-        await context.dispatch("getAllPosts", { page, limit });
-        posts = context.state.posts;
-      }
+      const response = await axiosInstance.get("/posts/search", { params });
+      const responseData = response.data;
 
-      // Lọc theo province
-      if (provinceName) {
-        posts = posts.filter((post) => post.provinceName === provinceName);
-      }
+      console.log("Kết quả tìm kiếm: ", responseData);
 
-      // Lọc theo keyword
-      if (keyword) {
-        const searchTerm = keyword.toLowerCase();
-        posts = posts.filter(
-          (post) =>
-            post.title.toLowerCase().includes(searchTerm) ||
-            post.project.toLowerCase().includes(searchTerm) ||
-            post.street.toLowerCase().includes(searchTerm) ||
-            post.description.toLowerCase().includes(searchTerm)
-        );
-      }
+      const posts = responseData.data.items.map((post) => ({
+        id: post._id,
+        title: post.title,
+        price: post.price,
+        area: post.area,
+        provinceCode: post.provinceCode,
+        provinceName: post.provinceName,
+        districtCode: post.districtCode,
+        districtName: post.districtName,
+        wardCode: post.wardCode,
+        wardName: post.wardName,
+        street: post.street,
+        project: post.project,
+        categoryId: post.category._id,
+        category: post.category.name,
+        type: post.category.type,
+        description: post.description,
+        imageUrls: post.images?.map((img) => img.url) || [],
+        user: post.user,
+        createdAt: new Date(post.createdAt).toLocaleDateString("vi-VN"),
+        views: post.views,
+        slug: post.slug,
+        status: post.status,
+      }));
 
-      // Cập nhật state
       context.commit("setPost", posts);
+      context.commit("setTotalPosts", responseData.total);
+
       return posts;
     } catch (error) {
       console.log(error);

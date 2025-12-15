@@ -8,7 +8,7 @@
           class="form-select shadow-sm rounded-3"
         >
           <option value="">Loại dự án</option>
-          <option v-for="item in categories" :key="item.id" :value="item.id">
+          <option v-for="item in categories" :key="item._id" :value="item._id">
             {{ item.name }}
           </option>
         </select>
@@ -59,6 +59,7 @@ export default {
     return {
       selectedCategory: "",
       selectedProvince: "",
+      keyword: "",
       provinces: [],
     };
   },
@@ -87,23 +88,19 @@ export default {
       }
     },
 
-    async search() {
-      try {
-        // Gọi action trong Vuex để tìm kiếm bài đăng
-        await this.$store.dispatch("posts/searchPosts", {
-          categoryId: this.selectedCategory,
-          provinceName: this.selectedProvince,
-          keyword: this.keyword,
-          page: 1,
-          limit: 12,
-        });
-
-        // Sau khi tìm kiếm xong thì chuyển hướng đến trang hiển thị kết quả
-        this.$router.push("/search");
-      } catch (error) {
-        console.error("Lỗi tìm kiếm:", error);
-        alert(error.message);
-      }
+    // Hàm tìm kiếm
+    search() {
+      console.log("Selected Category:", this.selectedCategory);
+      console.log("Selected Province:", this.selectedProvince);
+      console.log("Keyword:", this.keyword);
+      this.$router.push({
+        path: "/search",
+        query: {
+          categoryId: this.selectedCategory || "",
+          provinceName: this.selectedProvince || "",
+          keyword: this.keyword || "",
+        },
+      });
     },
   },
   mounted() {

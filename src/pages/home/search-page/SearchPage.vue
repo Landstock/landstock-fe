@@ -4,14 +4,14 @@
       <div class="col-lg-9 col-md-12">
         <h3 class="mb-3">Kết quả tìm kiếm</h3>
 
-        <div v-if="posts.length === 0" class="alert alert-warning">
+        <div v-if="filteredPosts.length === 0" class="alert alert-warning">
           Không tìm thấy bất động sản nào phù hợp.
         </div>
 
         <div v-else class="row">
           <div
             class="out-item col-lg-4 col-md-6 col-sm-12 mb-4 text-decoration-none"
-            v-for="(post, index) in posts"
+            v-for="(post, index) in filteredPosts"
             :key="index"
           >
             <!-- Hình ảnh bất động sản -->
@@ -28,7 +28,7 @@
                 />
 
                 <div class="description-overlay">
-                  <p>{{ post.description || "Chưa có mô tả" }}</p>
+                  <p>{{ post.description }}</p>
                 </div>
               </div>
             </router-link>
@@ -57,7 +57,7 @@
                   <span>
                     <i class="fas fa-expand-arrows-alt me-1 icon-blue"></i>
                     <strong>Diện tích: </strong>
-                    {{ post.area || "Đang cập nhật" }}
+                    {{ post.area }}
                   </span>
                 </div>
                 <hr />
@@ -66,7 +66,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="property-price">
                     <span class="pr-3">
-                      {{ post.price ? post.price.toLocaleString() : "Liên hệ" }}
+                      {{ post.price }}
                     </span>
                   </div>
                   <div>
@@ -89,31 +89,80 @@
 
 <script>
 import Sidebar from "@/components/homepage/Sidebar.vue";
+
 export default {
   name: "SearchPage",
   components: {
     Sidebar,
   },
+
   computed: {
-    posts() {
+    searchPosts() {
       return this.$store.state.posts.posts;
     },
+
+    // Thêm computed để lọc bài đăng theo categoryId
+    filteredPosts() {
+      const posts = Array.isArray(this.searchPosts) ? this.searchPosts : [];
+      const { categoryId } = this.$route.query || {};
+
+      // Nếu không có categoryId hoặc rỗng → trả về tất cả
+      if (!categoryId) return posts;
+
+      // Lọc theo categoryId (có kiểm tra null an toàn)
+      return posts.filter(
+        (post) => String(post.categoryId || "") === String(categoryId)
+      );
+    },
   },
+
   methods: {
+    async fetchSearchResults() {
+      try {
+        const {
+          categoryId,
+          provinceName,
+          keyword,
+          page = 1,
+          limit = 12,
+        } = this.$route.query;
+
+        console.log("Query params:", { categoryId, provinceName, keyword });
+
+        await this.$store.dispatch("posts/searchPosts", {
+          categoryId,
+          provinceName,
+          keyword,
+          page,
+          limit,
+        });
+
+        console.log("Posts từ store:", this.searchPosts);
+        console.log("Posts sau khi lọc:", this.filteredPosts);
+      } catch (error) {
+        console.error("Lỗi khi tìm kiếm:", error);
+      }
+    },
     getFullAddress(property) {
       const addressParts = [];
-
       if (property.street) addressParts.push(property.street);
       if (property.wardName) addressParts.push(property.wardName);
       if (property.districtName) addressParts.push(property.districtName);
       if (property.provinceName) addressParts.push(property.provinceName);
-
-      const fullAddress = addressParts
-        .filter((part) => part && part.trim())
-        .join(", ");
-
-      return fullAddress || "Chưa có địa chỉ";
+      return (
+        addressParts.filter((p) => p && p.trim()).join(", ") ||
+        "Chưa có địa chỉ"
+      );
     },
+  },
+  watch: {
+    $route() {
+      this.fetchSearchResults();
+    },
+  },
+
+  mounted() {
+    this.fetchSearchResults();
   },
 };
 </script>
